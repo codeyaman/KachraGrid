@@ -1,33 +1,30 @@
-<div align="center">
+<h1 align="center">🗑️ KachraGrid</h1>
 
-# 🗑️ KachraGrid
+<h3 align="center">AI-Powered Municipal Waste Complaint &amp; Logistics System</h3>
 
-### AI-Powered Municipal Waste Complaint & Logistics System
+<p align="center"><i>Photograph the garbage. Let AI file the complaint. Send the truck that is actually needed.</i></p>
 
-*Photograph the garbage. Let AI file the complaint. Send the truck that is actually needed.*
+<p align="center">
+  <img alt="License" src="https://img.shields.io/badge/License-Apache_2.0-green.svg">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.10%2B-blue.svg">
+  <img alt="Models" src="https://img.shields.io/badge/Models-Hugging_Face-yellow.svg">
+  <img alt="Cost" src="https://img.shields.io/badge/Cost-%E2%82%B90_Forever-brightgreen.svg">
+  <img alt="Status" src="https://img.shields.io/badge/Status-Prototype-orange.svg">
+  <img alt="Built at" src="https://img.shields.io/badge/Built_at-%5BHackathon_Name%5D-purple.svg">
+  <img alt="Open Source" src="https://img.shields.io/badge/Open_Source-Yes-green.svg">
+  <img alt="Build" src="https://img.shields.io/badge/build-CI_not_configured-lightgrey.svg">
+</p>
 
-![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)
-![Models](https://img.shields.io/badge/Models-Hugging_Face-yellow.svg)
-![Cost](https://img.shields.io/badge/Cost-%E2%82%B90_Forever-brightgreen.svg)
-![Status](https://img.shields.io/badge/Status-Prototype-orange.svg)
-![Built at](https://img.shields.io/badge/Built_at-%5BHackathon_Name%5D-purple.svg)
-![Open Source](https://img.shields.io/badge/Open_Source-Yes-green.svg)
-![Build](https://img.shields.io/badge/build-CI_not_configured-lightgrey.svg)
+<p align="center"><b>Citizen photo &nbsp;→&nbsp; AI analysis &nbsp;→&nbsp; Complaint &nbsp;→&nbsp; Truck</b></p>
 
-```text
-  _  __          _          _                _     _
- | |/ /__ _  ___| |__  _ __(_) __ _ _ __(_) __| |
- | ' // _` |/ __| '_ \| '__| |/ _` | '__| |/ _` |
- | . \ (_| | (__| | | | |  | | (_| | |  | | (_| |
- |_|\_\__,_|\___|_| |_|_|  |_|\__, |_|  |_|\__,_|
-                              |___/
-      Citizen photo  ->  AI analysis  ->  Complaint  ->  Truck
-```
-
-[Problem](#-the-problem) · [Solution](#-the-solution) · [Demo](#-live-demo-walkthrough) · [Quick Start](#-quick-start) · [Fuel Tracking](#-fuel-tracking) · [Roadmap](#-roadmap)
-
-</div>
+<p align="center">
+  <a href="#-the-problem">Problem</a> ·
+  <a href="#-the-solution">Solution</a> ·
+  <a href="#-live-demo-walkthrough">Demo</a> ·
+  <a href="#-quick-start">Quick Start</a> ·
+  <a href="#-fuel-tracking">Fuel Tracking</a> ·
+  <a href="#-roadmap">Roadmap</a>
+</p>
 
 ---
 
@@ -127,17 +124,11 @@ Municipal waste collection is run on schedules, not signals. KachraGrid replaces
 
 ## 🎬 Live Demo Walkthrough
 
-> Screenshots live in `docs/screenshots/`. Replace the placeholders after your first run.
-
 ### Step 1: File a complaint
-
-![Complaint form](docs/screenshots/01_complaint_form.png)
 
 The citizen enters name, phone, ward, location, problem type and description, then uploads a photo. Location can be typed, picked on the map, or read from the photo's EXIF GPS when present.
 
 ### Step 2: AI analyses the photo
-
-![AI analysis](docs/screenshots/02_ai_analysis.png)
 
 Sample output for a medical-waste complaint (sample report R003, near a hospital):
 
@@ -161,8 +152,6 @@ Sample output for a medical-waste complaint (sample report R003, near a hospital
 
 ### Step 3: Application is created and tracked
 
-![Status timeline](docs/screenshots/03_status_timeline.png)
-
 ```text
 Application KG-2025-0003                                Priority: EMERGENCY
 Ward 142 (Jayanagar)  |  Near Sagar Hospital  |  Filed 2025-01-13 11:00
@@ -181,19 +170,13 @@ Ward 142 (Jayanagar)  |  Near Sagar Hospital  |  Filed 2025-01-13 11:00
 
 ### Step 4: Officer reviews (prototype)
 
-![Officer dashboard](docs/screenshots/04_officer_dashboard.png)
-
 The officer sees the photo, the AI JSON, urgency and citizen contact, with **Approve / Reject / Hold** buttons. In demo mode the app approves automatically after 30 seconds.
 
 ### Step 5: Truck tracking (simulated)
 
-![Truck tracking](docs/screenshots/05_truck_tracking.png)
-
 A Folium map on OpenStreetMap shows the depot, the truck marker advancing along the route, and the target bin.
 
 ### Step 6: Fuel report
-
-![Fuel report](docs/screenshots/06_fuel_report.png)
 
 Sample per-trip result for Truck T01 (11.2 km optimized vs 18.5 km fixed route):
 
@@ -352,8 +335,6 @@ streamlit run app.py
 ```
 
 Open `http://localhost:8501`.
-
-![Running app](docs/screenshots/00_running_app.png)
 
 ### First-run time
 
@@ -674,9 +655,7 @@ kachragrid/
 │   ├── download_models.py        # Pull all models from Hugging Face
 │   └── seed_database.py          # Load sample data
 │
-├── tests/
-└── docs/
-    └── screenshots/
+└── tests/
 ```
 
 ---
@@ -814,10 +793,6 @@ See [`LICENSE`](LICENSE) for the full text.
 
 ---
 
-<div align="center">
+<p align="center"><b>KachraGrid</b> · every bin emptied when it needs to be · every citizen heard</p>
 
-**KachraGrid** · every bin emptied when it needs to be · every citizen heard
-
-*Prototype built at [Hackathon Name]*
-
-</div>
+<p align="center"><i>Prototype built at [Hackathon Name]</i></p>
