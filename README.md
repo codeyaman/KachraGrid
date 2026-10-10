@@ -1,516 +1,823 @@
 <div align="center">
 
-# KachraGrid
+# 🗑️ KachraGrid
 
-### AI-powered municipal waste logistics for Indian cities.
-### Open-source. Local-first. Free forever.
+### AI-Powered Municipal Waste Complaint & Logistics System
 
-![License](https://img.shields.io/badge/license-AGPL--3.0-green)
-![Docker](https://img.shields.io/badge/deploy-docker%20compose-2496ED)
-![Offline](https://img.shields.io/badge/runs-offline-success)
-![Cost](https://img.shields.io/badge/API%20keys-none%20required-brightgreen)
-![Pilot](https://img.shields.io/badge/pilot-Bangalore%20Ward%20142-orange)
+*Photograph the garbage. Let AI file the complaint. Send the truck that is actually needed.*
 
-*Collect what is full. Skip what is not. Hear every citizen.*
+![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)
+![Models](https://img.shields.io/badge/Models-Hugging_Face-yellow.svg)
+![Cost](https://img.shields.io/badge/Cost-%E2%82%B90_Forever-brightgreen.svg)
+![Status](https://img.shields.io/badge/Status-Prototype-orange.svg)
+![Built at](https://img.shields.io/badge/Built_at-%5BHackathon_Name%5D-purple.svg)
+![Open Source](https://img.shields.io/badge/Open_Source-Yes-green.svg)
+![Build](https://img.shields.io/badge/build-CI_not_configured-lightgrey.svg)
+
+```text
+  _  __          _          _                _     _
+ | |/ /__ _  ___| |__  _ __(_) __ _ _ __(_) __| |
+ | ' // _` |/ __| '_ \| '__| |/ _` | '__| |/ _` |
+ | . \ (_| | (__| | | | |  | | (_| | |  | | (_| |
+ |_|\_\__,_|\___|_| |_|_|  |_|\__, |_|  |_|\__,_|
+                              |___/
+      Citizen photo  ->  AI analysis  ->  Complaint  ->  Truck
+```
+
+[Problem](#-the-problem) · [Solution](#-the-solution) · [Demo](#-live-demo-walkthrough) · [Quick Start](#-quick-start) · [Fuel Tracking](#-fuel-tracking) · [Roadmap](#-roadmap)
 
 </div>
 
 ---
 
-## Table of Contents
+## 🚨 The Problem
 
-1. [The Problem](#the-problem)
-2. [The Solution](#the-solution)
-3. [Pilot Results (Demo Scenario)](#pilot-results-demo-scenario)
-4. [Features](#features)
-5. [Architecture](#architecture)
-6. [Tech Stack](#tech-stack)
-7. [Quickstart](#quickstart)
-8. [Configuration](#configuration)
-9. [The Four Workflows](#the-four-workflows)
-10. [AI Models and Prompts](#ai-models-and-prompts)
-11. [Services and APIs](#services-and-apis)
-12. [Database](#database)
-13. [Dashboard](#dashboard)
-14. [Evaluation Harness](#evaluation-harness)
-15. [Agent Skill](#agent-skill)
-16. [Repository Layout](#repository-layout)
-17. [Hardware Requirements](#hardware-requirements)
-18. [Roadmap](#roadmap)
-19. [Contributing](#contributing)
-20. [License](#license)
+> India produces roughly **1.5 lakh tonnes of municipal solid waste every day**. A large share of it is never collected.
 
----
-
-## The Problem
-
-Most Indian municipal garbage collection runs on **fixed routes and fixed schedules**:
-
-- Trucks stop at bins that are 20% full and skip bins that are 110% full.
-- Overflowing bins near hospitals, markets and schools become public-health hazards.
-- Citizen complaints arrive in Hindi, Kannada, English and Hinglish, with blurry photos and voice notes. Nobody triages them at scale.
-- Missed pickups go unnoticed until a neighbourhood complains.
-- Commercial route-optimization software is priced for enterprises, needs cloud APIs, and assumes reliable connectivity.
-
-## The Solution
-
-KachraGrid replaces the fixed schedule with a **closed loop**:
-
-```
-Sense  ->  Predict  ->  Optimize  ->  Dispatch  ->  Verify  ->  Learn
-(photos,   (fill %     (OR-Tools +   (Hinglish     (anomaly    (history
- reports,   per bin)    OSRM routes)  Telegram       detection)  feeds
- weather)                             briefings)                 predictions)
-```
-
-Every component is free and open-source. All AI inference runs locally through Ollama. After initial setup, the system works without internet access.
-
----
-
-## Pilot Results (Demo Scenario)
-
-Pilot ward: **Ward 142, Jayanagar, Bangalore (BBMP)** with 25 bins, 3 trucks, 3 drivers.
-
-Comparison for Truck T01 on a Monday, from the bundled sample dataset:
-
-| Metric | Fixed route (old) | KachraGrid (optimized) | Change |
-|---|---|---|---|
-| Stops | 8 bins | 5 bins | -3 stops |
-| Distance | 18.5 km | 11.2 km | **-39%** |
-| Time | 3.5 h | 2.1 h | **-1.4 h** |
-| Fuel | 6.2 L | 3.8 L | **-39%** |
-| Wasted stops (bin under 30% full) | 1 (B002 at 20%) | 0 | eliminated |
-| Overflowing bins skipped | 1 (B012 at 110%) | 0 | eliminated |
-
-```
-Fixed:     Depot > B001 > B002 > B003 > B004 > B005 > B006 > B007 > B008 > Depot
-Optimized: Depot > B001 (95%) > B005 (100%) > B012 (110%) > B010 (88%) > B016 (82%) > Depot
-```
-
-> These figures come from the bundled demo dataset and a single-route comparison. They illustrate the method. They are not field measurements. Validate against your own city's data using the [evaluation harness](#evaluation-harness) before making operational claims.
-
----
-
-## Features
-
-**Citizen intake**
-- Telegram bot accepts text, photos, voice notes and location pins.
-- Voice notes are transcribed locally (Whisper Small via faster-whisper).
-- Auto-detects language (Hindi, Kannada, English, Hinglish) and translates for processing.
-- Qwen2.5-VL analyses bin photos: overflow level, waste type, fire, sharps, rubble, damage.
-- Reports are classified (overflow, fire, hazardous, missed pickup, damage, illegal dump) and scored by severity.
-- Citizens get a reply in their own language.
-
-**Fill-level prediction**
-- SQL baseline from collection history (`fn_estimate_fill_pct`).
-- Llama 3.1 refines the estimate using area type, weather (rain increases wet-waste weight), day pattern and open citizen reports.
-- Predictions are stored and scored against actual pickups.
-
-**Route optimization**
-- OR-Tools capacity-constrained routing with optional drops (low-priority bins can be skipped).
-- OSRM provides real road distances for Bangalore.
-- Hospital, market and slum bins get priority weighting. Fire and hazardous reports preempt the plan.
-- Drivers receive a short Hinglish briefing on Telegram.
-
-**Anomaly detection**
-- Missed pickups, chronic overflow, hazardous-waste streams, sudden fill spikes, clustered reports.
-- Alerts routed to supervisors via Telegram.
-
-**Operations**
-- Grafana dashboard: live fill heatmap, KPIs, open alerts, fixed-vs-optimized comparison.
-- Leaflet + OpenStreetMap live bin map.
-- MinIO stores photos and voice notes on your own hardware.
-
----
-
-## Architecture
-
-```mermaid
-flowchart LR
-    subgraph Citizens
-        C1[Telegram: text / photo / voice / location]
-    end
-
-    subgraph Orchestration
-        N8N[n8n workflows]
-    end
-
-    subgraph AI["Local AI (Ollama + faster-whisper)"]
-        LLM[Llama 3.1 8B]
-        VLM[Qwen2.5-VL 7B]
-        STT[Whisper Small]
-        TR[Translator]
-    end
-
-    subgraph Logistics
-        OPT[OR-Tools Flask service]
-        OSRM[OSRM routing engine]
-    end
-
-    subgraph Data
-        PG[(PostgreSQL 16)]
-        RD[(Redis 7)]
-        S3[(MinIO)]
-        WX[Open-Meteo API]
-    end
-
-    subgraph Ops
-        GF[Grafana OSS]
-        MAP[Leaflet + OSM]
-        DRV[Driver Telegram briefings]
-    end
-
-    C1 --> N8N
-    N8N --> STT
-    N8N --> TR
-    N8N --> VLM
-    N8N --> LLM
-    N8N --> OPT
-    OPT --> OSRM
-    N8N <--> PG
-    N8N <--> RD
-    N8N --> S3
-    N8N --> WX
-    PG --> GF
-    PG --> MAP
-    N8N --> DRV
-    N8N --> C1
-```
-
-**Data flow summary**
-
-| Trigger | Path |
-|---|---|
-| Citizen message | Telegram > n8n > (Whisper) > Translator > (Qwen-VL) > Llama > PostgreSQL > Telegram reply |
-| Every 30 min | n8n > Open-Meteo + history > Llama > `fill_predictions` + `bins.current_fill_pct` |
-| 05:00 daily | n8n > bins above threshold > OR-Tools + OSRM > Llama (Hinglish) > driver Telegram |
-| Hourly | n8n > SQL anomaly rules > Llama > `anomalies` > supervisor Telegram |
-
----
-
-## Tech Stack
-
-| Layer | Tool | Why |
+| Figure | Value | Note |
 |---|---|---|
-| Orchestration | n8n (self-hosted) | Visual, versionable JSON workflows |
-| LLM | Llama 3.1 8B via Ollama | Multilingual reasoning, local |
-| Vision | Qwen2.5-VL 7B via Ollama | Photo understanding, local |
-| Speech-to-text | Whisper Small via faster-whisper | Hindi/Kannada/English, CPU-capable |
-| Database | PostgreSQL 16 | Relational core, JSONB for AI output |
-| Cache | Redis 7 | Dedup, rate limits, workflow state |
-| Routing | OSRM + OR-Tools (Flask) | Real road distances, CVRP solver |
-| Maps | OpenStreetMap + Leaflet.js | No API key, no billing |
-| Dashboard | Grafana OSS | Provisioned from code |
-| Messaging | Telegram Bot API | Free, works on low-end phones |
-| Storage | MinIO | Self-hosted S3 |
-| Weather | Open-Meteo | Free, no key |
-| Packaging | Docker Compose | One command bring-up |
-| Hosting | Local laptop or Oracle Cloud Always Free | Zero hosting cost |
+| Daily municipal solid waste | ~1.5 lakh tonnes | Order of magnitude from CPCB / MoHUA reporting |
+| Waste not collected | ~30% (estimates vary by city) | Left on streets, drains and vacant plots |
+| Route design | Fixed routes, often decades old | Trucks follow a schedule, not demand |
+| Complaint resolution | Days (commonly 3 to 7) | No tracking, no acknowledgement |
 
-The only credential required is a **Telegram bot token** from [@BotFather](https://t.me/BotFather).
+> **Honesty note:** the figures above are widely quoted ballpark numbers. Before publishing or presenting, replace them with citations from the latest CPCB annual report, MoHUA Swachh Survekshan data, and your target city's BBMP/BMC records.
+
+### Why existing systems fail
+
+- **Fixed routes ignore reality.** Trucks visit bins that are 20% full and drive past bins that are 110% full.
+- **Fuel is burned on stops that collect nothing.** Every unnecessary stop costs diesel, time and wear.
+- **No feedback loop.** A citizen files a complaint and hears nothing. There is no status, no ID, no accountability.
+- **No data.** Without fill levels and pickup history, nobody can plan, audit or improve.
+- **Complaints are unstructured.** Photos, voice notes and mixed-language messages cannot be triaged by hand at city scale.
+
+### The human cost
+
+- 🦟 **Disease.** Uncollected waste breeds mosquitoes, rats and flies. Dengue, cholera and leptospirosis follow.
+- 🤢 **Daily indignity.** Families live beside rotting waste, stray dogs and smoke from burning piles.
+- 💉 **Hidden hazards.** Medical waste, needles and chemicals end up in ordinary bins, endangering waste pickers and children.
+- 🏘️ **Neighbourhood decline.** Chronic dumping lowers quality of life and erodes trust in civic institutions.
 
 ---
 
-## Quickstart
+## 💡 The Solution
 
-### Prerequisites
+**KachraGrid** turns a smartphone photo into a tracked municipal work order.
 
-- Docker and Docker Compose v2
-- 16 GB RAM minimum (see [Hardware Requirements](#hardware-requirements))
-- 40 GB free disk
-- A Telegram bot token
+A citizen uploads a photo of an overflowing bin. A **local open-weight vision model** reads the image, estimates how full the bin is, identifies the waste type and flags hazards. The system files a numbered application, routes it to the municipal office for review, assigns the nearest suitable truck, tracks the trip, and calculates the diesel cost and savings versus the old fixed route.
 
-### 1. Clone and configure
+### Three phases
 
-```bash
-git clone https://github.com/<your-org>/kachragrid.git
-cd kachragrid
-cp .env.example .env
-# Edit .env and set TELEGRAM_BOT_TOKEN. Everything else has local defaults.
-```
-
-### 2. Prepare the OSRM road graph (one-time, needs internet)
-
-```bash
-# Downloads the Karnataka extract and builds the Bangalore routing graph
-bash data/osrm/prepare-osrm.sh
-```
-
-### 3. Start the stack
-
-```bash
-docker compose up -d
-```
-
-PostgreSQL initializes itself from `database/init/` and loads the Ward 142 sample data automatically.
-
-### 4. Pull the AI models (one-time, needs internet)
-
-```bash
-bash models/ollama/pull-models.sh
-# Pulls: llama3.1:8b  and  qwen2.5vl:7b
-```
-
-### 5. Import the n8n workflows
-
-Open `http://localhost:5678`, create the owner account, then import each file from `n8n/workflows/`:
-
-```
-01_citizen_report_intake.json
-02_fill_prediction_cron.json
-03_daily_route_optimizer.json
-04_anomaly_detection.json
-```
-
-Create the Postgres, Redis, Telegram and MinIO credentials (templates in `n8n/credentials/credentials.example.json`), then activate all four workflows.
-
-### 6. Open the interfaces
-
-| Interface | URL | Default login |
+| Phase | What happens | Status |
 |---|---|---|
-| n8n | http://localhost:5678 | set at first launch |
-| Grafana | http://localhost:3000 | from `.env` |
-| MinIO console | http://localhost:9001 | from `.env` |
-| Route optimizer API | http://localhost:5001/health | none |
-| Leaflet map | `dashboard/leaflet/index.html` | none |
+| **1. Citizen Complaint** | Form, photo upload, AI image analysis, application ID, live status tracking | ✅ **REAL and functional** |
+| **2. Municipal Office Review** | Officer dashboard, approve / reject / hold, work order generation | 🧪 **PROTOTYPE** (simulated; demo auto-approves after 30 s) |
+| **3. Truck Dispatch & Fuel Tracking** | Truck assignment, simulated live tracking, fuel cost and savings | 🧪 **PROTOTYPE** (simulated trips, real fuel math) |
 
-### 7. Verify
+> **What is real:** photo upload, AI image analysis, complaint filing, tracking, and the fuel and savings arithmetic.
+> **What is simulated:** the officer's decision, the truck's movement, and the trip completion. No real municipal system or vehicle is connected.
 
-```bash
-bash infra/scripts/healthcheck-all.sh
-make test
-make eval
+### Elevator pitch
+
+Municipal waste collection is run on schedules, not signals. KachraGrid replaces the schedule with citizen photos analysed by open-weight AI running on your own hardware. Photos, phone numbers and locations never leave the municipality's machine. Every component is free, so a ward can adopt it at **₹0**.
+
+---
+
+## 🔄 How It Works
+
+```text
+ ┌────────────────────────────── PHASE 1: CITIZEN  [ REAL ] ──────────────────────────────┐
+ │                                                                                         │
+ │  ┌──────────────┐    ┌──────────────────┐    ┌────────────────┐    ┌────────────────┐  │
+ │  │ Citizen      │───▶│ Complaint form   │───▶│ AI photo       │───▶│ Application    │  │
+ │  │ opens app    │    │ + bin photo      │    │ analysis       │    │ KG-2025-XXXX   │  │
+ │  └──────────────┘    └──────────────────┘    │ Qwen2.5-VL     │    │ created        │  │
+ │                                              │ fill %, type,  │    └───────┬────────┘  │
+ │                                              │ hazards,       │            │           │
+ │                                              │ priority       │            ▼           │
+ │                                              └────────────────┘    Status tracking     │
+ └──────────────────────────────────────────────────────────────────────┬──────────────────┘
+                                                                         │
+ ┌──────────────────────── PHASE 2: MUNICIPAL OFFICE  [ PROTOTYPE ] ─────▼──────────────────┐
+ │                                                                                           │
+ │  ┌─────────────────┐    ┌───────────────────────────────┐    ┌───────────────────────┐   │
+ │  │ Officer         │───▶│ Review: photo + AI analysis   │───▶│ Approve / Reject /    │   │
+ │  │ dashboard       │    │ + urgency + citizen info      │    │ Hold                  │   │
+ │  └─────────────────┘    └───────────────────────────────┘    └──────────┬────────────┘   │
+ │                                                  (demo: auto-approve 30s) │ Approved      │
+ │                                                                           ▼               │
+ │                                                                  Work Order generated     │
+ └───────────────────────────────────────────────────────────────────────┬───────────────────┘
+                                                                          │
+ ┌──────────────────── PHASE 3: DISPATCH & FUEL  [ PROTOTYPE / CALCULATED ]▼─────────────────┐
+ │                                                                                            │
+ │  ┌──────────────┐   ┌─────────────────────────────────────────────┐   ┌────────────────┐  │
+ │  │ Truck        │──▶│ Dispatched ▶ En Route ▶ Arrived ▶ Cleaning  │──▶│ Completed      │  │
+ │  │ assignment   │   │ ▶ Completed        (simulated tracking)     │   └───────┬────────┘  │
+ │  │ nearest +    │   └─────────────────────────────────────────────┘           │           │
+ │  │ capacity     │                                                             ▼           │
+ │  └──────────────┘            Fuel tracking:  km ÷ mileage × ₹89/L  =  trip cost + savings  │
+ └────────────────────────────────────────────────────────────────────────────────────────────┘
+
+   Legend:  REAL = runs real AI on real uploads     PROTOTYPE = simulated for demonstration
 ```
 
-### 8. Run the demo
-
-Follow [`docs/demo-script.md`](docs/demo-script.md) for the 3-minute walkthrough.
-
 ---
 
-## Configuration
+## 🎬 Live Demo Walkthrough
 
-All configuration lives in `.env`. Key variables:
+> Screenshots live in `docs/screenshots/`. Replace the placeholders after your first run.
 
-| Variable | Purpose | Default |
-|---|---|---|
-| `TELEGRAM_BOT_TOKEN` | Bot credential from @BotFather | (required) |
-| `OLLAMA_BASE_URL` | Ollama endpoint | `http://ollama:11434` |
-| `LLM_MODEL` | Text model | `llama3.1:8b` |
-| `VLM_MODEL` | Vision model | `qwen2.5vl:7b` |
-| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | Database credentials | local dev values |
-| `REDIS_URL` | Redis endpoint | `redis://redis:6379/0` |
-| `OSRM_URL` | OSRM endpoint | `http://osrm:5000` |
-| `OPEN_METEO_URL` | Weather API | `https://api.open-meteo.com/v1/forecast` |
-| `PILOT_WARD_ID` | Ward to operate on | `142` |
-| `FILL_THRESHOLD_PCT` | Minimum fill for routing | `70` |
+### Step 1: File a complaint
 
----
+![Complaint form](docs/screenshots/01_complaint_form.png)
 
-## The Four Workflows
+The citizen enters name, phone, ward, location, problem type and description, then uploads a photo. Location can be typed, picked on the map, or read from the photo's EXIF GPS when present.
 
-| # | Workflow | Trigger | What it does |
-|---|---|---|---|
-| 01 | **Citizen Report Intake** | Telegram webhook | Transcribe voice, detect language, translate, analyse photo, classify, match nearest bin, store, reply in citizen's language |
-| 02 | **Fill Prediction** | Cron, every 30 min | Pull weather, compute baseline fill, refine with Llama, update `bins.current_fill_pct` |
-| 03 | **Daily Route Optimizer** | Cron, 05:00 | Select bins above threshold plus priority overrides, call OR-Tools, generate Hinglish briefing, send to drivers |
-| 04 | **Anomaly Detection** | Cron, hourly | Detect missed pickups, chronic overflow, hazardous streams, report clusters, alert supervisors |
+### Step 2: AI analyses the photo
 
-Each workflow includes error-handling branches that log failures to the `anomalies` table and notify the supervisor chat.
+![AI analysis](docs/screenshots/02_ai_analysis.png)
 
----
-
-## AI Models and Prompts
-
-Prompt templates live in `models/prompts/`. Each has a `SYSTEM` and `USER` section and includes sample inputs from the Ward 142 dataset.
-
-| Prompt | Model | Purpose |
-|---|---|---|
-| `bin_photo_analysis.md` | Qwen2.5-VL 7B | Structured JSON: fill level, waste type, hazards, damage |
-| `fill_level_prediction.md` | Llama 3.1 8B | Refined fill forecast with confidence and reasoning |
-| `route_summary_hinglish.md` | Llama 3.1 8B | Driver-friendly Hinglish route briefing |
-| `citizen_chat_response.md` | Llama 3.1 8B | Multilingual acknowledgement and status reply |
-| `anomaly_detection.md` | Llama 3.1 8B | Explain and classify flagged patterns |
-
-All model calls use Ollama's `/api/generate` or `/api/chat` with `format: "json"` where structured output is required, and low temperature for reproducibility.
-
----
-
-## Services and APIs
-
-### Route Optimizer (`services/route-optimizer`, port 5001)
-
-`POST /optimize`
+Sample output for a medical-waste complaint (sample report R003, near a hospital):
 
 ```json
 {
-  "date": "2025-01-13",
-  "min_fill_pct": 70,
-  "bins": [
-    {"bin_id": "B001", "lat": 12.9250, "lng": 77.5830, "fill_pct": 95, "capacity_kg": 1000, "priority": 1}
+  "application_id": "KG-2025-0003",
+  "model": "Qwen/Qwen2.5-VL-7B-Instruct",
+  "fill_level_pct": 85,
+  "overflowing": false,
+  "waste_type": "mixed",
+  "hazards": [
+    {"type": "medical_waste", "evidence": "syringes and needles visible at top of bin", "severity": "high"},
+    {"type": "sharps", "evidence": "exposed needles within reach of the public", "severity": "high"}
   ],
-  "trucks": [
-    {"truck_id": "T01", "capacity_kg": 8000, "depot_lat": 12.9250, "depot_lng": 77.5830}
-  ]
+  "bin_condition": "intact",
+  "priority": "emergency",
+  "recommended_action": "Dispatch trained crew with sharps protocol and biomedical waste container. Do not mix with general collection.",
+  "confidence": 0.88
 }
 ```
 
-Returns ordered stops per truck with distance (km), duration (h), and estimated fuel (L).
+### Step 3: Application is created and tracked
 
-### Voice Processor (`services/voice-processor`, port 5002)
+![Status timeline](docs/screenshots/03_status_timeline.png)
 
-`POST /transcribe` with multipart audio. Returns `{ "text": "...", "language": "hi", "confidence": 0.93 }`.
+```text
+Application KG-2025-0003                                Priority: EMERGENCY
+Ward 142 (Jayanagar)  |  Near Sagar Hospital  |  Filed 2025-01-13 11:00
 
-### Translator (`services/translator`, port 5003)
-
-`POST /translate` with `{ "text": "...", "source_lang": "hi", "target_lang": "en" }`. Returns `{ "translated_text": "..." }`. Runs offline with Argos Translate.
-
----
-
-## Database
-
-PostgreSQL 16 schema, indexes, seed data, functions and views are in `database/init/`.
-
-| Table | Purpose |
-|---|---|
-| `wards`, `bins`, `trucks`, `drivers` | Master data |
-| `collections` | Pickup history, including missed pickups |
-| `citizen_reports` | Enriched reports with AI analysis in JSONB |
-| `weather_daily` | Open-Meteo snapshots |
-| `fill_predictions` | Every prediction, for later scoring |
-| `routes`, `route_stops` | Planned fixed and optimized routes |
-| `anomalies` | Detected issues and their resolution state |
-
-Key objects:
-
-- `fn_estimate_fill_pct(bin_id, at)` : baseline fill estimate from history and weather
-- `v_bin_status_live` : Grafana source view with fill, priority and open-report counts
-- `v_route_comparison` : fixed vs optimized savings
-
----
-
-## Dashboard
-
-Grafana is provisioned entirely from code (`dashboard/grafana/provisioning`).
-
-- **Overview**: fill heatmap on OpenStreetMap, bins above 70%, overflow count, open anomalies, reports by category
-- **Route comparison**: distance, time and fuel for fixed vs optimized, per truck, per day
-
-The standalone Leaflet map (`dashboard/leaflet/`) colours each bin by fill level and links reports to bins.
-
----
-
-## Evaluation Harness
-
-Because all models are local and swappable, measuring them matters.
-
-```bash
-make eval
+  ●  Submitted          2025-01-13 11:00:04
+  ●  Analyzed           2025-01-13 11:00:19   AI: medical waste, sharps
+  ●  Sent to Office     2025-01-13 11:00:20
+  ●  Under Review       2025-01-13 11:00:21
+  ●  Approved           2025-01-13 11:00:51   (auto-approved, prototype)
+  ●  Dispatched         2025-01-13 11:00:52   Truck T01 / Rajesh Kumar
+  ◐  En Route           ETA 6 min
+  ○  Arrived
+  ○  Cleaning
+  ○  Completed
 ```
 
-| Suite | Metric | Source |
+### Step 4: Officer reviews (prototype)
+
+![Officer dashboard](docs/screenshots/04_officer_dashboard.png)
+
+The officer sees the photo, the AI JSON, urgency and citizen contact, with **Approve / Reject / Hold** buttons. In demo mode the app approves automatically after 30 seconds.
+
+### Step 5: Truck tracking (simulated)
+
+![Truck tracking](docs/screenshots/05_truck_tracking.png)
+
+A Folium map on OpenStreetMap shows the depot, the truck marker advancing along the route, and the target bin.
+
+### Step 6: Fuel report
+
+![Fuel report](docs/screenshots/06_fuel_report.png)
+
+Sample per-trip result for Truck T01 (11.2 km optimized vs 18.5 km fixed route):
+
+```text
+TRIP FUEL REPORT                         Truck T01  |  Mileage 6.0 km/L  |  Diesel ₹89.00/L
+
+                     Optimized (KachraGrid)      Old fixed route        Saved
+ Distance                      11.2 km                18.5 km             7.3 km  (39%)
+ Diesel used                   1.87 L                 3.08 L              1.22 L
+ Cost                          ₹166                   ₹274                ₹108
+```
+
+---
+
+## ✨ Features
+
+| Feature | Description | Status | AI Model Used |
+|---|---|---|---|
+| 📸 Photo Analysis | Fill level (0 to 120%), waste type, condition from a bin photo | ✅ Real | Qwen2.5-VL-7B-Instruct |
+| ⚠️ Hazard Detection | Flags medical waste, sharps, fire, smoke, chemicals, rubble | ✅ Real | Qwen2.5-VL-7B-Instruct |
+| 📝 Complaint Form | Name, phone, ward, location, problem type, description | ✅ Real | None |
+| 🔎 Application Tracking | Unique ID `KG-YYYY-XXXX`, live status timeline | ✅ Real | None |
+| 🧠 Fill Prediction | Estimates when a bin will be full from history, area type and weather | ✅ Real (on sample data) | Llama-3.1-8B-Instruct |
+| 🎙️ Voice Complaints | Speak the complaint instead of typing | ✅ Real | Whisper-small |
+| 🌐 Multilingual Support | Hindi, Kannada, English and Hinglish in; English for officers | ✅ Real | NLLB-200 distilled 600M |
+| 🏛️ Office Review | Approve / reject / hold, work-order generation | 🧪 Prototype | Llama-3.1-8B (summaries) |
+| 🚛 Truck Dispatch | Assign nearest truck with enough capacity | 🧪 Prototype | None (rules) |
+| 📍 Live Tracking | Dispatched, En Route, Arrived, Cleaning, Completed | 🧪 Prototype | None (simulation) |
+| ⛽ Fuel Calculation | Distance ÷ mileage × ₹/L, savings vs fixed route | ✅ Real math, simulated trips | None |
+| 📊 Monthly Reports | Per-truck totals, savings, projections | ✅ Real math, simulated trips | None |
+| 📲 Telegram Alerts | Optional status notifications | ✅ Real (optional) | None |
+
+---
+
+## 🧰 Tech Stack
+
+Every component is free. AI models are downloaded straight from the **Hugging Face Hub** and run locally.
+
+| Component | Technology | Cost | Why Open-Source |
+|---|---|---|---|
+| Frontend | Streamlit | ₹0 | Fast Python UI, no JS build chain |
+| Vision AI | `Qwen/Qwen2.5-VL-7B-Instruct` | ₹0 | Photos of medical waste and homes stay on-premises |
+| Text AI | `meta-llama/Llama-3.1-8B-Instruct` | ₹0 | Municipal data stays under municipal control |
+| Speech-to-text | `openai/whisper-small` | ₹0 | Voice notes contain personal information |
+| Translation | `facebook/nllb-200-distilled-600M` | ₹0 | Works offline in flood or outage conditions |
+| AI library | `transformers` + `torch` + `bitsandbytes` | ₹0 | Standard, inspectable, swappable |
+| Database | SQLite (prototype) / PostgreSQL (production) | ₹0 | Zero-setup now, scalable later |
+| Maps | Folium + OpenStreetMap | ₹0 | No API key, no billing |
+| Charts | Streamlit native charts + Plotly | ₹0 | Interactive without a BI licence |
+| Messaging | Telegram Bot API (optional) | ₹0 | Free, works on low-end phones |
+| Fuel tracking | Custom Python module | ₹0 | Transparent, auditable formula |
+| Packaging | Docker Compose (optional) | ₹0 | Reproducible deployment |
+
+### ⚖️ Licences of the models (read before deploying)
+
+| Model | Licence | Implication |
 |---|---|---|
-| Fill prediction | MAE (percentage points), within-10pt accuracy | `eval/cases/fill_prediction_cases.json` |
-| Photo analysis | Category accuracy, severity F1, hazard recall | `eval/cases/photo_analysis_cases.json` |
-| Route savings | Distance, time, fuel savings vs fixed route | `eval/cases/route_savings_cases.json` |
-| Model comparison | Llama vs Phi vs Qwen on the same cases | `eval/benchmarks/model_comparison_template.md` |
+| Qwen2.5-VL-7B-Instruct | Apache 2.0 | Permissive, commercial use allowed |
+| whisper-small | MIT | Permissive |
+| Llama-3.1-8B-Instruct | Llama 3.1 Community Licence | **Open-weight, not OSI open-source.** Gated: accept Meta's terms on Hugging Face. Usage restrictions apply |
+| nllb-200-distilled-600M | CC-BY-NC 4.0 | **Non-commercial.** Confirm your deployment qualifies, or substitute another translation model |
 
-The scoring rubric is in `eval/harness/scoring_rubric.md`. Results are written to `eval/results/`.
-
----
-
-## Agent Skill
-
-KachraGrid exposes its analysis as a reusable agent skill: **`waste-bin-analyzer`**.
-
-- Manifest: `skills/waste-bin-analyzer/skill.json`
-- Input: bin photo and/or text report, optional location
-- Output: waste type, fill estimate, hazards, severity, recommended action
-- Examples: `skills/waste-bin-analyzer/examples/`
-
-Any agent framework that supports the skill manifest format can call it.
+The KachraGrid **source code** is Apache 2.0. Model weights keep their own licences.
 
 ---
 
-## Repository Layout
+## 🏗️ Architecture
+
+```text
+                          ┌─────────────────────────────┐
+                          │          CITIZEN            │
+                          │   browser / phone / voice   │
+                          └──────────────┬──────────────┘
+                                         │
+ ════════════ REAL ══════════════════════▼══════════════════════════════════════════
+                          ┌─────────────────────────────┐
+                          │       STREAMLIT APP         │
+                          │  complaint form · tracking  │
+                          │  officer view · dashboards  │
+                          └───┬──────────┬───────────┬──┘
+                              │          │           │
+          ┌───────────────────▼──┐  ┌────▼─────┐  ┌──▼────────────────────┐
+          │   AI LAYER (local)   │  │ MAPS     │  │ DATABASE              │
+          │   Hugging Face       │  │ Folium + │  │ SQLite  (prototype)   │
+          │                      │  │ OSM      │  │ PostgreSQL (prod)     │
+          │ Qwen2.5-VL  photo    │  └──────────┘  │                       │
+          │ Llama-3.1   text     │                │ applications          │
+          │ Whisper     voice    │◀──────────────▶│ analyses              │
+          │ NLLB-200    translate│                │ bins · trucks         │
+          └──────────────────────┘                │ trips · fuel_logs     │
+                                                  └──────────┬────────────┘
+ ═════════ PROTOTYPE / SIMULATED ═════════════════════════════│═══════════════════
+                                                              │
+   ┌──────────────────────┐   ┌──────────────────────┐   ┌────▼─────────────────┐
+   │ OFFICE SIMULATOR     │──▶│ DISPATCH SIMULATOR   │──▶│ FUEL TRACKING MODULE │
+   │ approve / reject /   │   │ truck choice + state │   │ km ÷ mileage × ₹/L   │
+   │ hold · auto 30 s     │   │ machine + movement   │   │ savings · monthly    │
+   └──────────────────────┘   └──────────────────────┘   └────┬─────────────────┘
+                                                              │
+                                                  ┌───────────▼────────────┐
+                                                  │ DASHBOARD (Plotly)     │
+                                                  │ trips · km · ₹ · saved │
+                                                  └────────────────────────┘
+
+   Optional: Telegram Bot API for status notifications to citizen and officer.
+```
+
+### Design principles
+
+- **Local inference.** No image or text is sent to a third-party AI API.
+- **One database, thin layers.** Streamlit pages call plain Python modules; modules call the DB.
+- **Honest simulation.** Simulated parts are isolated in `simulation/` and clearly labelled in the UI.
+- **Swappable models.** Model IDs and quantisation live in `config.yaml`.
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+| Requirement | Detail |
+|---|---|
+| Python | 3.10 or newer |
+| RAM | 16 GB minimum |
+| Disk | **40 GB free** (about 35 GB of model downloads plus cache) |
+| GPU | NVIDIA with 6 GB+ VRAM strongly recommended |
+| Accounts | Hugging Face account (free) with access to Llama 3.1 granted |
+
+> **Llama 3.1 is gated.** Open the model page on Hugging Face, accept Meta's licence, create a read token, then run `huggingface-cli login`.
+
+### Install
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/<your-org>/kachragrid.git
+cd kachragrid
+
+# 2. Create an isolated environment
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Authenticate with Hugging Face (needed once for the gated Llama model)
+huggingface-cli login
+
+# 5. Download all models (one time, about 35 GB)
+python scripts/download_models.py
+
+# 6. Seed the Ward 142 sample data
+python scripts/seed_database.py
+
+# 7. Run the app
+streamlit run app.py
+```
+
+Open `http://localhost:8501`.
+
+![Running app](docs/screenshots/00_running_app.png)
+
+### First-run time
+
+| Phase | Time |
+|---|---|
+| Install dependencies | 3 to 5 min |
+| Model download (about 35 GB) | 15 to 60+ min, depends on bandwidth |
+| First model load | 1 to 3 min |
+| Later launches | under 1 min |
+
+After the first download, the system runs **fully offline**.
+
+### Optional: Docker Compose
+
+```bash
+docker compose up --build
+```
+
+Mount your Hugging Face cache (`~/.cache/huggingface`) into the container to avoid re-downloading.
+
+### Optional: Telegram notifications
+
+```bash
+export TELEGRAM_BOT_TOKEN="123456:ABC..."     # from @BotFather
+export TELEGRAM_OFFICER_CHAT_ID="..."
+```
+
+### Hardware tiers
+
+| Tier | RAM | GPU | Disk | Expected latency |
+|---|---|---|---|---|
+| Minimum | 16 GB | none | 40 GB | slow, 30 s or more per response |
+| Recommended | 16 GB | NVIDIA 6 GB+ | 40 GB | about 5 s |
+| Best | 24 GB | NVIDIA 8 GB+ | 50 GB | about 2 s |
+| Free cloud | 24 GB (Oracle Always Free, 4 ARM cores) | none | 50 GB | CPU speed |
+
+> **Caveats.** `bitsandbytes` 4-bit loading targets NVIDIA CUDA. On CPU-only or ARM machines, use `quantization: none` with smaller or alternative models, or expect long response times and higher RAM use. The latency figures are targets; benchmark on your hardware with `python -m eval.latency`.
+
+---
+
+## 🤖 Model Details
+
+| Model | Hugging Face ID | Download size | Purpose | Memory at 4-bit |
+|---|---|---|---|---|
+| Vision | `Qwen/Qwen2.5-VL-7B-Instruct` | about 16 GB | Photo analysis | about 6 GB VRAM |
+| Text | `meta-llama/Llama-3.1-8B-Instruct` | about 16 GB | Summaries, prediction reasoning, replies | about 5.5 GB VRAM |
+| Voice | `openai/whisper-small` | about 1 GB | Voice complaints | about 1 GB |
+| Translation | `facebook/nllb-200-distilled-600M` | about 2.5 GB | Hindi / Kannada to English and back | about 1.5 GB |
+| **Total** | | **about 35 GB** | | |
+
+### Low-memory loading
+
+Weights are downloaded in 16-bit and **quantised to 4-bit as they load**, which shrinks memory use. It does not shrink the download.
+
+```python
+import torch
+from transformers import AutoModelForCausalLM, BitsAndBytesConfig
+
+# 4-bit NF4 quantisation: roughly a quarter of the 16-bit memory footprint
+quant_cfg = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.bfloat16,
+)
+
+llm = AutoModelForCausalLM.from_pretrained(
+    "meta-llama/Llama-3.1-8B-Instruct",
+    quantization_config=quant_cfg,
+    device_map="auto",
+)
+```
+
+### Automatic download
+
+Models are fetched from the Hugging Face Hub the first time they are needed (or ahead of time with `scripts/download_models.py`) and cached locally.
+
+### Memory strategy on small GPUs
+
+On a 6 GB GPU the app loads **one large model at a time**: the vision model for photo analysis, then it unloads and the text model loads for summaries. This is why a request touching both takes longer on small hardware.
+
+---
+
+## ⛽ Fuel Tracking
+
+Fuel tracking is **real arithmetic applied to simulated trips**.
+
+### Formula
+
+```text
+Diesel used (L)  =  Distance (km)  ÷  Truck mileage (km/L)
+Trip cost (₹)    =  Diesel used (L)  ×  Diesel rate (₹/L)
+
+Savings          =  Old fixed-route value  −  Optimized value     (km, L and ₹)
+```
+
+```python
+def trip_fuel(distance_km: float, mileage_km_per_l: float, diesel_rate: float = 89.0) -> dict:
+    """Return diesel litres and rupee cost for one trip."""
+    litres = distance_km / mileage_km_per_l          # diesel consumed
+    return {"litres": litres, "cost_inr": litres * diesel_rate}
+```
+
+### Fleet and rates
+
+| Truck | Capacity | Mileage | Driver |
+|---|---|---|---|
+| T01 | 8 tonne | 6.0 km/L | Rajesh Kumar |
+| T02 | 8 tonne | 5.5 km/L | Suresh Reddy |
+| T03 | 5 tonne | 7.0 km/L | Manjunath |
+
+Diesel rate: **₹89 per litre** (configurable in `config.yaml`).
+
+### Sample monthly report: Truck T01, January
+
+| Metric | Optimized (KachraGrid) | Old fixed route | Savings |
+|---|---|---|---|
+| Trips | 22 | 22 | none |
+| Distance | 246 km | 407 km | **161 km (39.6%)** |
+| Diesel | 41.0 L | 67.8 L | **26.8 L** |
+| Cost | ₹3,649 | ₹6,034 | **₹2,385 / month** |
+| Average per trip | ₹166 | ₹274 | ₹108 |
+| Average per km | ₹14.83 | ₹14.83 | none |
+
+> Cost per km is identical because the same truck burns the same fuel per km. **The saving comes from driving fewer kilometres**, which is exactly what demand-based routing changes.
+
+### Projections (simple linear extrapolation)
+
+| Scope | Assumption | Projected saving |
+|---|---|---|
+| One truck, one year | T01 result repeated for 12 months | about ₹28,600, 322 L, 1,932 km |
+| City fleet of 50 trucks | All trucks save like T01 | about ₹14.3 lakh per year, 16,100 L of diesel |
+
+> **Caveats.** The 50-truck figure ignores differences in mileage, route length and load, and assumes the T01 saving generalises. Treat it as an order-of-magnitude estimate, then replace it with measured data from a real pilot.
+
+### Why it matters
+
+Fuel is a recurring, line-item cost in municipal budgets. Less diesel burned also means lower emissions and less wear on vehicles. A transparent per-trip ledger gives officers an auditable number instead of an estimate.
+
+---
+
+## 📋 Application Workflow
+
+```text
+ Citizen submits form + photo
+          │
+          ▼
+   ┌─────────────┐
+   │  Submitted  │  application ID KG-YYYY-XXXX issued
+   └──────┬──────┘
+          ▼
+   ┌─────────────┐
+   │  Analyzed   │  AI result stored (fill %, type, hazards, priority)
+   └──────┬──────┘
+          ▼
+   ┌──────────────────┐
+   │  Sent to Office  │
+   └──────┬───────────┘
+          ▼
+   ┌──────────────┐        ┌────────────┐
+   │ Under Review │───────▶│  Rejected  │  reason shown to citizen
+   └──────┬───────┘        └────────────┘
+          │ ⏸ Hold: stays here until an officer acts
+          ▼
+   ┌──────────────┐
+   │   Approved   │  work order generated
+   └──────┬───────┘
+          ▼
+   Dispatched ▶ En Route ▶ Arrived ▶ Cleaning ▶ Completed
+```
+
+### Status codes
+
+| Code | Meaning | Set by | Real or simulated |
+|---|---|---|---|
+| `SUBMITTED` | Complaint received, ID issued | System | Real |
+| `ANALYZED` | AI analysis stored | System | Real |
+| `SENT_TO_OFFICE` | Queued for review | System | Real |
+| `UNDER_REVIEW` | Officer is looking at it | Officer / simulator | Simulated |
+| `APPROVED` | Work order issued | Officer / simulator | Simulated |
+| `REJECTED` | Not actionable, reason recorded | Officer / simulator | Simulated |
+| `DISPATCHED` | Truck assigned | Dispatcher | Simulated |
+| `EN_ROUTE` | Truck travelling | Simulator | Simulated |
+| `ARRIVED` | Truck at the bin | Simulator | Simulated |
+| `CLEANING` | Crew working | Simulator | Simulated |
+| `COMPLETED` | Bin cleared, fuel logged | Simulator | Simulated |
+
+### Priority rules
+
+| Priority | Triggers | Target response (design goal) |
+|---|---|---|
+| Emergency | Fire, sharps, medical waste, chemical hazard | Immediate |
+| High | Fill above 100%, near hospital / school / market | Same day |
+| Medium | Fill 70 to 100% | Within 24 h |
+| Low | Fill below 70% | Next scheduled pass |
+
+### Prototype simulation
+
+`DEMO_MODE=true` (default) auto-approves after **30 seconds** and advances truck states on a short timer so the full flow can be shown in minutes. Set `DEMO_MODE=false` to require manual officer action.
+
+<details>
+<summary><b>Application data model (click to expand)</b></summary>
+
+```sql
+-- One row per citizen complaint
+CREATE TABLE applications (
+    application_id   TEXT PRIMARY KEY,          -- KG-2025-0001
+    citizen_name     TEXT NOT NULL,
+    phone_masked     TEXT NOT NULL,             -- stored masked, e.g. +9198765XXXX
+    ward             INTEGER NOT NULL,
+    lat              REAL, lng REAL,
+    problem_type     TEXT NOT NULL,
+    description      TEXT,
+    photo_path       TEXT,
+    status           TEXT NOT NULL DEFAULT 'SUBMITTED',
+    priority         TEXT,
+    created_at       TEXT NOT NULL
+);
+
+-- AI output for each application
+CREATE TABLE analyses (
+    application_id   TEXT REFERENCES applications(application_id),
+    fill_level_pct   REAL, waste_type TEXT,
+    hazards_json     TEXT, confidence REAL,
+    raw_json         TEXT, model TEXT, analyzed_at TEXT
+);
+
+-- Fuel ledger per completed trip
+CREATE TABLE fuel_logs (
+    trip_id TEXT PRIMARY KEY, truck_id TEXT, trip_date TEXT,
+    distance_km REAL, mileage_kmpl REAL, litres REAL, cost_inr REAL,
+    old_distance_km REAL, old_litres REAL, old_cost_inr REAL
+);
+```
+
+</details>
+
+---
+
+## 🗂️ Sample Data
+
+Included under `data/sample/`. Everything is synthetic or approximate.
+
+| Dataset | Content |
+|---|---|
+| Bins | **25 bins** around Jayanagar, Bangalore (**Ward 142**) with GPS coordinates, area type and capacity |
+| Trucks | **3 trucks**: T01 (8 T, 6 km/L), T02 (8 T, 5.5 km/L), T03 (5 T, 7 km/L) |
+| Drivers | Rajesh Kumar, Suresh Reddy, Manjunath |
+| Complaints | **5 sample reports** in Hinglish and English with photos (overflow, fire, medical waste, missed pickup, construction debris) |
+| Collection history | **7 days** of pickups for 5 sample bins, including missed pickups |
+| Fuel logs | Trip records with savings against the fixed route |
+
+Area types: market, residential, commercial, hospital, slum, school.
+
+> Coordinates approximate Jayanagar and are **not** official BBMP bin locations.
+
+### Replace with your city's data
+
+1. Export your bins to `data/sample/bins.csv` (`bin_id, lat, lng, area_type, capacity_kg, ward`).
+2. Update `data/sample/trucks.csv` with your fleet, capacities and mileage.
+3. Set the ward, city centre and diesel rate in `config.yaml`.
+4. Run `python scripts/seed_database.py --reset`.
+
+---
+
+## 📁 Project Structure
 
 ```text
 kachragrid/
-├── docker-compose.yml     # Entire stack
-├── .env.example           # All configuration
-├── database/init/         # Schema, seed data, functions, views
-├── n8n/workflows/         # 4 importable workflow JSON files
-├── models/                # Ollama setup + prompt templates
-├── services/              # route-optimizer, voice-processor, translator
-├── dashboard/             # Grafana provisioning + Leaflet map
-├── skills/                # waste-bin-analyzer manifest
-├── data/                  # Sample CSVs, demo images, OSRM prep
-├── infra/                 # MinIO, Redis, Postgres config, scripts
-├── eval/                  # Evaluation harness
-├── tests/                 # Integration and end-to-end tests
-└── docs/                  # Architecture, deployment, demo script
+├── app.py                        # ⭐ Streamlit entry point
+├── config.yaml                   # Model IDs, diesel rate, mileage, DEMO_MODE
+├── requirements.txt
+├── docker-compose.yml            # Optional container setup
+├── LICENSE                       # Apache 2.0
+├── README.md
+│
+├── pages/                        # Streamlit multipage UI
+│   ├── 1_File_Complaint.py       # Citizen form + photo upload
+│   ├── 2_Track_Application.py    # Status timeline
+│   ├── 3_Officer_Dashboard.py    # Review queue (prototype)
+│   ├── 4_Truck_Tracking.py       # Folium live map (simulated)
+│   └── 5_Fuel_Reports.py         # Trip and monthly reports
+│
+├── kachragrid/                   # Core Python package
+│   ├── ai/
+│   │   ├── vision.py             # ⭐ Qwen2.5-VL bin photo analysis
+│   │   ├── text.py               # Llama-3.1 summaries and reasoning
+│   │   ├── voice.py              # Whisper-small transcription
+│   │   ├── translate.py          # NLLB-200 translation
+│   │   ├── model_loader.py       # 4-bit loading, load/unload management
+│   │   └── prompts/              # System and user prompt templates
+│   ├── db.py                     # SQLite / PostgreSQL access
+│   ├── applications.py           # Create, update, status transitions
+│   ├── fuel.py                   # ⭐ Fuel and savings calculations
+│   └── notify.py                 # Optional Telegram notifications
+│
+├── simulation/                   # Everything PROTOTYPE lives here
+│   ├── office.py                 # Auto-approve after 30 s
+│   ├── dispatch.py               # Nearest-truck assignment
+│   └── tracker.py                # Truck state machine and movement
+│
+├── skills/
+│   └── waste-bin-analyzer/       # Agent Skill
+│       ├── skill.json
+│       └── examples/
+│
+├── eval/                         # Evaluation harness
+│   ├── fill_prediction.py        # ⭐ Fill prediction benchmark
+│   ├── photo_analysis.py
+│   ├── route_savings.py
+│   ├── cases/                    # Test cases
+│   └── results/
+│
+├── data/
+│   ├── sample/                   # Ward 142 dataset + sample photos
+│   └── uploads/                  # Citizen uploads (git-ignored)
+│
+├── scripts/
+│   ├── download_models.py        # Pull all models from Hugging Face
+│   └── seed_database.py          # Load sample data
+│
+├── tests/
+└── docs/
+    └── screenshots/
 ```
 
-Full file-by-file listing: [`PART1_STRUCTURE.md`](PART1_STRUCTURE.md).
+---
+
+## 🏆 Hackathon Requirements Compliance
+
+| Requirement | Status | Detail |
+|---|---|---|
+| Open-source AI | ✅ | Llama 3.1 and Qwen2.5-VL from Hugging Face (open-weight; see licence table) |
+| Public GitHub repository | ✅ | Apache 2.0 licensed |
+| Agent Skill | ✅ | `waste-bin-analyzer` in `skills/waste-bin-analyzer/skill.json` |
+| Original evaluation harness | ✅ | Fill-prediction benchmark, photo-analysis accuracy, route-savings checks in `eval/` |
+| Open-weight models are essential | ✅ | See below |
+
+### Agent Skill: `waste-bin-analyzer`
+
+```json
+{
+  "name": "waste-bin-analyzer",
+  "description": "Analyzes a photo of a waste bin and returns fill level, waste type, hazards and priority.",
+  "input": {"image": "bytes", "location": "optional lat,lng", "text": "optional citizen description"},
+  "output": {"fill_level_pct": "number", "waste_type": "string", "hazards": "array", "priority": "string"}
+}
+```
+
+### Evaluation harness
+
+| Suite | Metric |
+|---|---|
+| Fill prediction | Mean absolute error in percentage points; share within 10 points |
+| Photo analysis | Waste-type accuracy; hazard recall (missing a needle is the costly error) |
+| Route savings | Distance and fuel saved versus the fixed route |
+| Model comparison | Llama vs Phi vs Qwen on identical cases |
+
+```bash
+python -m eval.fill_prediction      # benchmark results written to eval/results/
+```
+
+### Why open-weight models are essential here
+
+| Reason | Why it matters |
+|---|---|
+| 🏥 **Medical and hazardous waste photos** | Images can show patient materials, hospital premises and people. Sending them to an external API is a privacy risk |
+| 📱 **Citizen data** | Phone numbers, names and home locations are personal data under India's data-protection regime |
+| 🏛️ **Government sovereignty** | Municipal records should remain under municipal control, not a foreign vendor's cloud |
+| 💰 **Cost at scale** | Per-call API pricing across a population of hundreds of millions of citizens is unaffordable for municipal budgets. Local inference has no per-call cost |
+| 🌧️ **Resilience** | Floods and network outages are exactly when waste problems spike. Local models keep working offline |
 
 ---
 
-## Hardware Requirements
+## 📈 Impact Metrics
 
-| Setup | RAM | GPU | Notes |
+> These are **design targets and hypotheses**, not measured results. KachraGrid is a prototype. The pilot phase exists to replace each target with a measurement.
+
+| Metric | Before (typical today) | After KachraGrid (target) | How it will be measured |
 |---|---|---|---|
-| Laptop (recommended for demo) | 16 GB+ | 8 GB VRAM or better | Llama 3.1 8B and Qwen2.5-VL 7B respond in seconds |
-| Laptop, CPU only | 16 GB+ | none | Works. Photo analysis takes tens of seconds per image |
-| Oracle Cloud Always Free (ARM) | 24 GB | none | Works for batch workflows (routes, predictions). Interactive photo analysis is slow |
+| Complaint response time | Days, often untracked | Same day for high / emergency priority | Timestamps in `applications` |
+| Fuel cost per truck | Fixed-route baseline | Reduction from fewer kilometres (demo route: 39%) | `fuel_logs` before vs after |
+| Overflowing bins at end of shift | Unknown | Zero bins above 100% in pilot ward | Fill estimates and photos |
+| Citizen feedback | None | Status visible for every complaint | Share of complaints with a tracked ID |
+| Citizen satisfaction | Not measured | Survey in pilot ward | Post-resolution rating |
+| Disease incidence | Not linked to waste data | Track alongside ward health data | Partner with ward health office |
+| Swachh Survekshan ranking | Current city rank | Improved citizen-feedback and processing indicators | Official survey results |
 
-Workflows are designed to tolerate latency: citizen replies are asynchronous, and routing runs before the shift starts. Models are loaded on demand and unloaded when idle to fit in memory.
-
----
-
-## Roadmap
-
-- [x] Ward 142 pilot: 25 bins, 3 trucks
-- [ ] Scale to 500 bins across multiple wards
-- [ ] Kannada voice and text hardening
-- [ ] WhatsApp channel via self-hosted bridge
-- [ ] Driver mobile web app with turn-by-turn navigation
-- [ ] Bin IoT fill sensors as an optional input (ultrasonic, LoRa)
-- [ ] Waste-segregation analytics per ward
-- [ ] Reinforcement of predictions from verified pickup weights
-- [ ] Multi-city configuration (Hyderabad, Pune, Chennai)
+Only the fuel row is currently backed by (simulated) calculations. Every other row requires pilot data.
 
 ---
 
-## Contributing
+## 🛣️ Roadmap
 
-Contributions are welcome, especially from municipal workers, sanitation engineers and civic-tech practitioners.
+| Phase | Scope | Status |
+|---|---|---|
+| **1. Hackathon prototype** | Real citizen flow and AI analysis; simulated office, dispatch and tracking; fuel math | 🟢 Current |
+| **2. Ward pilot** | One ward (Ward 142 candidate) with real bin locations, real officers, manual review, measured results | ⚪ Planned |
+| **3. Municipal integration** | Connect to BBMP / BMC complaint and work-order systems and APIs | ⚪ Planned |
+| **4. IoT and real GPS** | Bin fill sensors, truck GPS telemetry, replace simulated tracking | ⚪ Planned |
+| **5. City-wide deployment** | Multi-ward rollout, PostgreSQL, role-based access, audit logs | ⚪ Planned |
 
-1. Fork the repository and create a feature branch.
-2. Run `make test` and `make eval` before opening a pull request.
-3. Keep every dependency free and open-source. No proprietary APIs.
-4. Document new environment variables in `.env.example` and this README.
-
-Good first issues: new prompt languages, additional ward datasets, Grafana panels, OSRM profile tuning for Indian road conditions.
-
----
-
-## Data and Privacy
-
-- Citizen phone numbers are stored masked.
-- Photos and voice notes remain on your own MinIO instance.
-- No data leaves your infrastructure except Telegram messages and Open-Meteo weather queries.
-- The sample dataset is synthetic. Bin coordinates approximate Jayanagar and do not represent real BBMP assets.
+Also planned: stronger Kannada support, WhatsApp channel, model-licence review for production, CI pipeline.
 
 ---
 
-## License
+## 🤝 Contributing
 
-Released under the **GNU AGPL-3.0**. Free to use, modify and deploy. Modified network-served versions must publish their source.
+Contributions are welcome, especially from civic-tech practitioners, sanitation engineers and municipal staff.
+
+```bash
+git checkout -b feature/your-feature
+# make changes, add tests
+pytest
+git commit -m "Describe your change"
+git push origin feature/your-feature     # then open a pull request
+```
+
+- Read `CODE_OF_CONDUCT.md` (Contributor Covenant) before participating.
+- Use the issue templates in `.github/ISSUE_TEMPLATE/`: **Bug report**, **Feature request**, **New city dataset**.
+- Keep every dependency free. No paid or proprietary APIs.
+- Document new configuration in `config.yaml` and this README.
+
+Good first issues: additional languages, new ward datasets, photo-analysis test cases, UI accessibility.
+
+---
+
+## 👥 Team
+
+| Name | Role | Links |
+|---|---|---|
+| [Name] | [Role] | [GitHub / LinkedIn] |
+| [Name] | [Role] | [GitHub / LinkedIn] |
+
+---
+
+## 📄 License
+
+Source code is released under the **Apache License 2.0**.
+
+- ✅ Use, modify and distribute freely, including commercially
+- ✅ Includes an explicit patent grant
+- ⚠️ Keep the licence and notice files, and state significant changes
+- ⚠️ **Model weights carry their own licences** (Llama 3.1 Community Licence, CC-BY-NC for NLLB). See the [model licence table](#️-licences-of-the-models-read-before-deploying)
+
+See [`LICENSE`](LICENSE) for the full text.
+
+---
+
+## 🙏 Acknowledgments
+
+- **[Hugging Face](https://huggingface.co)** for the model hub and `transformers`
+- **[Meta AI](https://ai.meta.com)** for Llama 3.1 and NLLB-200
+- **[Qwen team, Alibaba Cloud](https://github.com/QwenLM)** for Qwen2.5-VL
+- **[OpenAI](https://github.com/openai/whisper)** for the open Whisper weights
+- **[OpenStreetMap](https://www.openstreetmap.org)** contributors and **[Folium](https://python-visualization.github.io/folium/)**
+- **[Streamlit](https://streamlit.io)** for the rapid UI framework
+- **BBMP open data** and the sanitation workers who keep Indian cities running
 
 ---
 
 <div align="center">
 
-**KachraGrid** : built so every bin gets emptied when it needs to be, and every citizen gets heard.
+**KachraGrid** · every bin emptied when it needs to be · every citizen heard
+
+*Prototype built at [Hackathon Name]*
 
 </div>
