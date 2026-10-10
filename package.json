@@ -1,0 +1,11 @@
+{
+  "name": "kachragrid-root",
+  "version": "2.0.0",
+  "private": true,
+  "description": "KachraGrid v2 Root Script Proxy",
+  "scripts": {
+    "build": "npm --prefix frontend run build",
+    "dev": "npm --prefix frontend run dev",
+    "preview": "npm --prefix frontend run preview"
+  }
+}

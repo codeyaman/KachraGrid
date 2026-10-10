@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="KachraGrid v2 — Eco-Smart Civic Waste Grievance & Logistics Grid. BBMP Ward 142, Jayanagar, Bangalore." />
+  <title>KachraGrid | Clean Ward-142 — Civic Waste Logistics</title>
+
+  <!-- Typography: Inter + Plus Jakarta Sans + JetBrains Mono + Newsreader Editorial -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500;1,6..72,600&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Iconify Icons -->
+  <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>" />
+</head>
+<body class="eco-body antialiased selection:bg-emerald/20 selection:text-emerald">
+
+  <!-- ── Preloader ── -->
+  <div id="preloader">
+    <div class="preloader-inner">
+      <div class="preloader-leaf-spin">🌿</div>
+      <div class="preloader-brand">
+        <span class="brand-title">KachraGrid</span>
+        <span class="brand-sub">Clean Ward-142 • Bangalore</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Main Canvas Wrapper ── -->
+  <div class="canvas-frame">
+
+    <!-- ── Top Header Navigation ── -->
+    <header id="main-nav" class="top-nav">
+      <!-- Left Logo & Language -->
+      <div class="nav-left">
+        <a href="#" class="brand-logo" data-nav="landing">
+          <div class="logo-leaf-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+            </svg>
+          </div>
+          <span class="logo-text">Kachra-Grid</span>
+        </a>
+        <div class="lang-selector">
+          <span class="globe-icon">🌐</span>
+          <span>En</span>
+        </div>
+      </div>
+
+      <!-- Center Pill Navigation -->
+      <nav class="center-pill-menu" aria-label="Main Navigation">
+        <button class="pill-nav-item active" data-nav="landing">Home</button>
+        <button class="pill-nav-item" data-nav="dashboard">Visualizer</button>
+        <button class="pill-nav-item" data-nav="complaint">File Grievance</button>
+        <button class="pill-nav-item" data-nav="tracker">Track Status</button>
+        <button class="pill-nav-item" data-nav="map">Fleet Map</button>
+        <button class="pill-nav-item" data-nav="fuel">Fuel Savings</button>
+        <button class="pill-nav-item" data-nav="about">About Us</button>
+      </nav>
+
+      <!-- Right Action CTA -->
+      <div class="nav-right">
+        <button class="btn-pill-ghost" data-nav="tracker">Track</button>
+        <button class="btn-pill-dark" data-nav="complaint">
+          <span>CleanWard</span>
+        </button>
+        <button class="mobile-toggle" id="nav-toggle" aria-label="Toggle navigation">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── Mobile Drawer ── -->
+    <div id="mobile-menu" class="mobile-drawer">
+      <div class="mobile-drawer-inner">
+        <button class="mobile-nav-link active" data-nav="landing">Home</button>
+        <button class="mobile-nav-link" data-nav="dashboard">Data Visualizer</button>
+        <button class="mobile-nav-link" data-nav="complaint">File Grievance</button>
+        <button class="mobile-nav-link" data-nav="tracker">Track Status</button>
+        <button class="mobile-nav-link" data-nav="map">Live Fleet Map</button>
+        <button class="mobile-nav-link" data-nav="fuel">Fuel &amp; Route Economics</button>
+        <button class="mobile-nav-link" data-nav="about">About Us</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         MAIN CONTENT AREA
+         ══════════════════════════════════════════════════════════════ -->
+    <main id="app-content">
+
+      <!-- ══════════════════════════════════════════════════════════════
+           PAGE 1: LANDING STAGE (Floating Clean Island Diorama)
+           ══════════════════════════════════════════════════════════════ -->
+      <section id="page-landing" class="page active">
+        <div class="landing-stage">
+
+          <!-- Ambient Concentric Background Rings -->
+          <div class="ambient-rings">
+            <div class="ring-circle ring-lg"></div>
+            <div class="ring-circle ring-md"></div>
+            <div class="ring-circle ring-sm"></div>
+            <div class="floating-orb orb-1"></div>
+            <div class="floating-orb orb-2"></div>
+            <div class="floating-orb orb-3"></div>
+          </div>
+
+          <!-- Hero Text Header: Detailed Project Overview (Left Side) -->
+          <div class="hero-header-center">
+            <!-- Main Project Title -->
+            <h1 class="hero-title">
+              AI Waste Grievances &amp; Municipal Logistics
+            </h1>
+
+            <!-- Comprehensive Project Description -->
+            <p class="hero-subtitle">
+              A free-forever, open civic intelligence platform built for Indian cities. Citizens upload photo evidence diagnosed by on-device Vision AI (Qwen2.5-VL / ResNet), while municipal officers review automated compactor dispatches — cutting resolution turnaround from 48 hours to under 4 hours and slashing municipal diesel burn by 38.2%.
+            </p>
+          </div>
+
+          <!-- Hero Centerpiece: 3D Floating Clean Island Diorama -->
+          <div class="island-diorama-wrapper">
+            <div class="island-visual-container">
+              <!-- Floating 3D Island Render -->
+              <img src="/floating_island.jpg" alt="Clean Ward 142 Floating Island Diorama" class="island-img" />
+
+              <!-- Horizontally Aligned Telemetry Badges -->
+              <div class="hex-badge-cluster">
+                <div class="hex-badge"><span class="hex-text">98% Clean Index</span></div>
+                <div class="hex-badge"><span class="hex-text">BBMP Ward 142</span></div>
+                <div class="hex-badge"><span class="hex-text">₹763 Saved/Shift</span></div>
+                <div class="hex-badge"><span class="hex-text">Dual Vision AI</span></div>
+              </div>
+            </div>
+
+            <!-- Bottom Right Floating Hexagon Icon Cluster (Horizontally Aligned) -->
+            <div class="metadata-bottom-right">
+              <div class="mini-hex-group">
+                <div class="mini-hex"><span class="mini-hex-icon">🍃</span></div>
+                <div class="mini-hex"><span class="mini-hex-icon">✳️</span></div>
+                <div class="mini-hex"><span class="mini-hex-icon">✨</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           PAGE 2: ABOUT US (EXACT REFERENCE TO HANERGY PLANETARY STYLE)
+           ══════════════════════════════════════════════════════════════ -->
+      <section id="page-about" class="page">
+        <div class="about-cosmic-stage">
+          
+          <!-- Top Metadata Header (Reference Match) -->
+          <div class="about-top-meta">
+            <div class="meta-indic">ಕಸ ಮುಕ್ತ ನಗರ • ಸ್ವಚ್ಛ ಬೆಂಗಳೂರು</div>
+            <div class="meta-title">KACHRAGRID V2 • CIVIC INTELLIGENCE PLATFORM</div>
+            <div class="meta-dash">—</div>
+          </div>
+
+          <!-- Main Layout Grid: Left Content, Center Planetary Globe, Right Pillar Icons -->
+          <div class="about-grid-body">
+
+            <!-- Left Typography & Narrative -->
+            <div class="about-left-content">
+              <h2 class="about-main-headline">
+                Use civic AI<br>
+                to clean<br>
+                our cities
+              </h2>
+
+              <div class="about-narrative-box">
+                <p class="about-lead">
+                  KachraGrid v2 is an open-source, free-forever civic waste intelligence and municipal logistics prototype built for Indian cities. Designed specifically around real Indian government workflows in BBMP Ward 142 (Jayanagar, Bangalore).
+                </p>
+                <p class="about-body">
+                  By combining citizen grievance redressal with local Vision AI diagnostics (Qwen2.5-VL / ResNet-50), automated municipal SLA review pipelines, and dynamic compactor dispatch, KachraGrid cuts response times from 48 hours to under 4 hours while saving over 38% in municipal diesel expenses.
+                </p>
+                <p class="about-foot">
+                  100% Free Forever • Zero Paid API dependencies • Hugging Face Transformers • Leaflet GIS • MIT Licensed.
+                </p>
+              </div>
+
+              <div class="about-actions-row">
+                <button class="btn-cta-green" data-nav="complaint">
+                  <span>File Grievance</span>
+                  <span class="cta-arrow">→</span>
+                </button>
+                <button class="btn-cta-white" data-nav="dashboard">
+                  <span>Live Telemetry</span>
+                  <span class="cta-arrow">→</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Center Centerpiece: Photorealistic Planetary Globe with Volumetric Clouds -->
+            <div class="about-globe-centerpiece">
+              <div class="globe-wrap">
+                <img src="/clean_earth_globe.jpg" alt="Planetary Earth with Volumetric Clouds" class="globe-img" />
+                <div class="globe-atmosphere-glow"></div>
+              </div>
+            </div>
+
+            <!-- Right Side Interactive Pillar Buttons (4 Glass Circles matching reference) -->
+            <div class="about-right-pillars">
+              <button class="pillar-circle active" data-pillar="vision" aria-label="Open-Source Vision">
+                <span class="iconify" data-icon="solar:lightbulb-bold"></span>
+              </button>
+              <button class="pillar-circle" data-pillar="waste" aria-label="Zero Waste Grid">
+                <span class="iconify" data-icon="solar:restart-bold"></span>
+              </button>
+              <button class="pillar-circle" data-pillar="ai" aria-label="Neural Vision AI">
+                <span class="iconify" data-icon="solar:atom-bold"></span>
+              </button>
+              <button class="pillar-circle" data-pillar="fuel" aria-label="Fuel & Route Economics">
+                <span class="iconify" data-icon="solar:fire-bold"></span>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Dynamic Pillar Interactive Insight Card -->
+          <div class="pillar-insight-card" id="pillar-insight-card">
+            <span class="pillar-tag font-mono" id="pillar-tag">PILLAR 01 • OPEN SOURCE</span>
+            <h4 class="pillar-title" id="pillar-title">Free-Forever Civic Infrastructure</h4>
+            <p class="pillar-desc" id="pillar-desc">
+              Built without commercial API lock-in. Powered entirely by local neural vision pipelines and open geospatial routing, saving municipalities millions in proprietary software licenses.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           PAGE 3: DATA VISUALIZATION (EXACT REFERENCE REPLICA)
+           PLANETARY GIS COCKPIT WITH ACTUAL SITE DATA
+           ══════════════════════════════════════════════════════════════ -->
+      <section id="page-dashboard" class="page">
+        <div class="vis-hud-container">
+
+          <!-- Top HUD Header Bar: Exact Match to Reference -->
+          <div class="vis-top-bar">
+            <div class="vis-top-left">
+              <h2 class="vis-main-title">DATA VISUALIZATION</h2>
+              <span class="vis-sub-badge font-mono">BBMP WARD-142 • BANGALORE CIVIC SITES</span>
+            </div>
+            <div class="vis-top-right">
+              <span class="vis-weather font-mono">⛅ 26°C</span>
+              <span class="vis-timestamp font-mono" id="vis-live-clock">2026.10.10 15:58</span>
+              <div class="vis-sim-buttons">
+                <button class="btn-vis-pill" id="btn-dash-sim-advance" title="Simulate 1 hour advance">
+                  <span class="iconify" data-icon="solar:play-bold"></span>
+                  <span>+1 Hr</span>
+                </button>
+                <button class="btn-vis-pill auto-sla" id="btn-dash-sim-sla" title="Trigger municipal SLA approvals">
+                  <span class="iconify" data-icon="solar:alarm-bold"></span>
+                  <span>Auto-SLA</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Stage: Left 3 HUD Chart Cards + Right Planetary GIS Curved Globe -->
+          <div class="vis-main-grid">
+
+            <!-- Left Column: 3 Stacked Glass HUD Cards -->
+            <div class="vis-left-column">
+
+              <!-- Card 1: Top Bar Chart (KM / KG Waste & Cleared) -->
+              <div class="vis-card">
+                <div class="vis-card-header">
+                  <span class="vis-card-title">SITE ACCUMULATION &amp; FLEET DISPATCH</span>
+                  <div class="vis-card-legends">
+                    <span class="vis-leg-dot cyan"></span>
+                    <span class="vis-leg-label">SERIES 1</span>
+                    <span class="vis-leg-dot mint"></span>
+                    <span class="vis-leg-label">SERIES 2</span>
+                  </div>
+                </div>
+                <div class="vis-metric-axis font-mono">
+                  <span>KM / KG</span>
+                  <span>300</span>
+                  <span>200</span>
+                  <span>0</span>
+                </div>
+                <div class="vis-chart-wrapper bar-chart-wrap">
+                  <canvas id="vis-bar-chart"></canvas>
+                </div>
+              </div>
+
+              <!-- Card 2: Middle Donut Chart (Site Capacity Status) -->
+              <div class="vis-card">
+                <div class="vis-card-header">
+                  <span class="vis-card-title">SITE CAPACITY BREAKDOWN</span>
+                </div>
+                <div class="vis-donut-content-row">
+                  <div class="vis-donut-wrap">
+                    <canvas id="vis-donut-chart"></canvas>
+                  </div>
+                  <div class="vis-donut-legends" id="vis-donut-legends-list">
+                    <div class="vis-legend-item">
+                      <span class="vis-leg-dot red"></span>
+                      <span class="leg-name">SERIES 1</span>
+                      <span class="leg-val font-mono" id="donut-val-crit">8 Bins</span>
+                      <span class="leg-pct font-mono" id="donut-pct-crit">32%</span>
+                    </div>
+                    <div class="vis-legend-item">
+                      <span class="vis-leg-dot amber"></span>
+                      <span class="leg-name">SERIES 2</span>
+                      <span class="leg-val font-mono" id="donut-val-mod">7 Bins</span>
+                      <span class="leg-pct font-mono" id="donut-pct-mod">28%</span>
+                    </div>
+                    <div class="vis-legend-item">
+                      <span class="vis-leg-dot cyan"></span>
+                      <span class="leg-name">SERIES 3</span>
+                      <span class="leg-val font-mono" id="donut-val-norm">7 Bins</span>
+                      <span class="leg-pct font-mono" id="donut-pct-norm">28%</span>
+                    </div>
+                    <div class="vis-legend-item">
+                      <span class="vis-leg-dot purple"></span>
+                      <span class="leg-name">SERIES 4</span>
+                      <span class="leg-val font-mono" id="donut-val-over">3 Bins</span>
+                      <span class="leg-pct font-mono" id="donut-pct-over">12%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: Bottom Dual Wave Spline Line Chart -->
+              <div class="vis-card">
+                <div class="vis-card-header">
+                  <span class="vis-card-title">HOURLY FILL &amp; COLLECTION VELOCITY</span>
+                  <div class="vis-card-legends">
+                    <span class="vis-leg-dot cyan"></span>
+                    <span class="vis-leg-label">SERIES 1</span>
+                    <span class="vis-leg-dot mint"></span>
+                    <span class="vis-leg-label">SERIES 2</span>
+                  </div>
+                </div>
+                <div class="vis-metric-axis font-mono">
+                  <span>°C / %</span>
+                  <span>40</span>
+                  <span>20</span>
+                  <span>0</span>
+                </div>
+                <div class="vis-chart-wrapper line-chart-wrap">
+                  <canvas id="vis-line-chart"></canvas>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Stage: Planetary Curved Globe with Interactive Actual Sites -->
+            <div class="vis-right-stage">
+              <div class="vis-globe-stage">
+                
+                <!-- Curved Earth GIS Backdrop -->
+                <img src="/planetary_gis_earth.jpg" alt="Planetary Earth GIS Visualization" class="vis-earth-bg" />
+                <div class="vis-earth-grid-mesh"></div>
+
+                <!-- Interactive Sites Pin Layer (Plotted for Actual 25 Sites) -->
+                <div class="vis-sites-pins-layer" id="vis-sites-pins-layer">
+                  <!-- Populated dynamically by main.js with real bins from API -->
+                </div>
+
+                <!-- Floating Hologram Tooltip Card (Exact match to 'HOUSTON INDEX: 123') -->
+                <div class="vis-hologram-card" id="vis-hologram-card">
+                  <div class="vis-holo-header">
+                    <div class="vis-holo-pin-tag">
+                      <span class="iconify" data-icon="solar:map-point-wave-bold"></span>
+                      <span id="holo-site-id">B001</span>
+                    </div>
+                    <div class="vis-holo-name" id="holo-site-name">JAYANAGAR 4TH BLOCK</div>
+                  </div>
+                  <div class="vis-holo-stats-row font-mono">
+                    <div class="holo-stat-item">
+                      <span class="label">INDEX :</span>
+                      <span class="val text-cyan" id="holo-fill-pct">95%</span>
+                    </div>
+                    <div class="holo-stat-item">
+                      <span class="label">CAPACITY :</span>
+                      <span class="val" id="holo-capacity">1000 KG</span>
+                    </div>
+                  </div>
+                  <div class="vis-holo-sub-row">
+                    <span class="holo-zone-tag" id="holo-zone">COMMERCIAL MARKET</span>
+                    <span class="holo-time-tag font-mono" id="holo-cleaned">CLEARED 07:11</span>
+                  </div>
+                </div>
+
+                <!-- Bottom HUD Overlays: Circular Gauges + Level Bars + Stats -->
+                <div class="vis-bottom-hud-row">
+
+                  <!-- Circular Progress Gauges (Matching 75% INDEX / 75 INDEX in reference) -->
+                  <div class="vis-circular-gauges">
+                    <div class="vis-dial-item">
+                      <div class="vis-dial-svg-wrap">
+                        <svg viewBox="0 0 100 100" class="vis-dial-svg">
+                          <circle cx="50" cy="50" r="42" class="dial-bg"></circle>
+                          <circle cx="50" cy="50" r="42" class="dial-prog prog-cyan" id="dial-prog-clean"></circle>
+                        </svg>
+                        <div class="dial-center-text">
+                          <span class="dial-val font-mono" id="dial-clean-val">82%</span>
+                          <span class="dial-sub">INDEX</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="vis-dial-item">
+                      <div class="vis-dial-svg-wrap">
+                        <svg viewBox="0 0 100 100" class="vis-dial-svg">
+                          <circle cx="50" cy="50" r="42" class="dial-bg"></circle>
+                          <circle cx="50" cy="50" r="42" class="dial-prog prog-mint" id="dial-prog-sla"></circle>
+                        </svg>
+                        <div class="dial-center-text">
+                          <span class="dial-val font-mono" id="dial-sla-val">94</span>
+                          <span class="dial-sub">INDEX</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Horizontal Level Progress Meters (Matching SERIES 1 888 UNIT in reference) -->
+                  <div class="vis-horizontal-levels">
+                    <div class="vis-level-title">TITLE (WARD TONNAGE BREAKDOWN)</div>
+                    <div class="vis-level-item">
+                      <span class="level-label font-mono">SERIES 1</span>
+                      <div class="level-bar-track">
+                        <div class="level-bar-fill fill-cyan" style="width: 78%;"></div>
+                      </div>
+                      <span class="level-unit font-mono" id="level-val-wet">888 UNIT</span>
+                    </div>
+                    <div class="vis-level-item">
+                      <span class="level-label font-mono">SERIES 2</span>
+                      <div class="level-bar-track">
+                        <div class="level-bar-fill fill-mint" style="width: 58%;"></div>
+                      </div>
+                      <span class="level-unit font-mono" id="level-val-dry">666 UNIT</span>
+                    </div>
+                    <div class="vis-level-item">
+                      <span class="level-label font-mono">SERIES 3</span>
+                      <div class="level-bar-track">
+                        <div class="level-bar-fill fill-amber" style="width: 35%;"></div>
+                      </div>
+                      <span class="level-unit font-mono" id="level-val-haz">400 UNIT</span>
+                    </div>
+                  </div>
+
+                  <!-- Bottom Right Statistics Callouts (Matching 20 UNIT statistics in reference) -->
+                  <div class="vis-stats-unit-callouts">
+                    <div class="vis-unit-stat-box">
+                      <div class="unit-stat-head">
+                        <span class="unit-globe-icon">🌐</span>
+                        <div class="unit-titles">
+                          <div class="unit-main">STATISTICS</div>
+                          <div class="unit-desc">MONITORED SITES</div>
+                        </div>
+                      </div>
+                      <div class="unit-stat-digits">
+                        <span class="big-num font-mono" id="unit-stat-sites">25</span>
+                        <span class="unit-word font-mono">UNIT</span>
+                      </div>
+                    </div>
+
+                    <div class="vis-unit-stat-box">
+                      <div class="unit-stat-head">
+                        <span class="unit-globe-icon">🚛</span>
+                        <div class="unit-titles">
+                          <div class="unit-main">STATISTICS</div>
+                          <div class="unit-desc">ACTIVE FLEET UNITS</div>
+                        </div>
+                      </div>
+                      <div class="unit-stat-digits">
+                        <span class="big-num font-mono" id="unit-stat-trucks">20</span>
+                        <span class="unit-word font-mono">UNIT</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Quick Accordion/Drawer for Grievance Feed & Telemetry Stats Table -->
+          <div class="vis-bottom-drawer">
+            <details class="vis-details-drawer">
+              <summary class="vis-drawer-summary font-mono">
+                <span>VIEW LIVE GRIEVANCE FEED &amp; INCIDENT LOG (WARD 142)</span>
+                <span class="summary-arrow">▼</span>
+              </summary>
+              <div class="vis-drawer-body">
+                <!-- Keep hidden legacy telemetry stats so all existing bindings stay safe -->
+                <div class="hidden-telemetry-cache" style="display:none;">
+                  <span id="stat-critical">0</span>
+                  <span id="stat-pending">0</span>
+                  <span id="stat-completed">0</span>
+                  <span id="stat-savings">0</span>
+                  <span id="stat-trucks">0</span>
+                  <span id="stat-bins">0</span>
+                </div>
+                <div class="table-scroll-wrap mt-3">
+                  <table class="eco-table" id="dashboard-apps-table">
+                    <thead>
+                      <tr>
+                        <th>Application ID</th>
+                        <th>Citizen</th>
+                        <th>Ward Bin</th>
+                        <th>Reported Issue</th>
+                        <th>AI Urgency</th>
+                        <th>Status</th>
+                        <th>Filed At</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </details>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           PAGE 4: FILE GRIEVANCE (VISION AI & FORM)
+           ══════════════════════════════════════════════════════════════ -->
+      <section id="page-complaint" class="page">
+        <div class="grievance-scene-wrapper">
+          <div class="grievance-scenic-stage">
+            <!-- Continuous Seamless Logistics Animation (Zero Fade In / Zero Fade Out) -->
+            <video class="grievance-backdrop-video" autoplay loop muted playsinline>
+              <source src="/grievance_bg_video.mp4?v=seamless" type="video/mp4" />
+            </video>
+            
+            <!-- Ambient Gradient Overlay for Contrast -->
+            <div class="grievance-stage-overlay-left"></div>
+
+            <!-- Top Left Frosted Civic Pill Navigation / Badge -->
+            <div class="grievance-top-pill-bar">
+              <div class="frosted-civic-badge">
+                <span class="civic-badge-dot"></span>
+                <span class="civic-badge-icon">🌿</span>
+                <span class="civic-badge-title">KachraGrid Ward-142</span>
+                <span class="civic-badge-sep">•</span>
+                <span class="civic-badge-desc">Citizen Redressal Desk</span>
+              </div>
+              <div class="civic-hotline-tag">
+                <span class="iconify" data-icon="solar:phone-calling-bold"></span>
+                <span>Helpline: 1533</span>
+              </div>
+            </div>
+
+            <!-- Bottom Left Editorial Headline -->
+            <div class="grievance-stage-headline-block">
+              <h2 class="grievance-stage-title">
+                We turn your civic grievance<br />
+                into <em>prompt action</em>
+              </h2>
+              <p class="grievance-stage-subtitle">
+                AI volume diagnosis, instant GPS compactor routing, and BBMP SLA transparency.
+              </p>
+            </div>
+
+            <!-- Floating White Form Card on the Right (Matching Reference) -->
+            <div class="grievance-card-floating">
+              <div class="grievance-card-inner">
+
+                <!-- Card Header -->
+                <div class="grievance-card-header">
+                  <div class="flex items-center justify-between">
+                    <h3 class="grievance-form-title">Let's resolve it! 🌿</h3>
+                    <span class="badge-active-live">
+                      <span class="pulse-dot"></span> 24/7 Desk
+                    </span>
+                  </div>
+                  <p class="grievance-form-desc">BBMP Ward 142 Rapid Waste Redressal System</p>
+                </div>
+
+                <!-- Quick Contact Banner (Reference: 'Mail us at ...' + social icons) -->
+                <div class="grievance-contact-banner">
+                  <div class="banner-mail-info">
+                    <span class="banner-mail-label">Mail control desk at</span>
+                    <a href="mailto:grievance@cleanward142.gov.in" class="banner-mail-addr">grievance@cleanward142.gov.in</a>
+                  </div>
+                  <div class="banner-social-links">
+                    <a href="https://twitter.com" target="_blank" class="banner-icon-btn" title="BBMP Redressal X"><span class="iconify" data-icon="ri:twitter-x-fill"></span></a>
+                    <a href="https://whatsapp.com" target="_blank" class="banner-icon-btn" title="WhatsApp Grievance Bot"><span class="iconify" data-icon="ri:whatsapp-fill"></span></a>
+                    <a href="tel:1533" class="banner-icon-btn" title="Call BBMP 1533"><span class="iconify" data-icon="solar:phone-calling-bold"></span></a>
+                    <a href="#page-tracker" class="banner-icon-btn" title="Search Grievance"><span class="iconify" data-icon="solar:magnifer-linear"></span></a>
+                  </div>
+                </div>
+
+                <!-- Subtle 'OR' Divider -->
+                <div class="grievance-or-divider">
+                  <span class="or-line"></span>
+                  <span class="or-label">OR</span>
+                  <span class="or-line"></span>
+                </div>
+
+                <!-- Form Element -->
+                <form id="complaint-form" class="grievance-form-element">
+                  <div class="form-subheading">Citizen &amp; Location Details</div>
+
+                  <!-- 2-col inputs (Your name & Phone) -->
+                  <div class="grievance-input-row-2">
+                    <div class="g-input-field">
+                      <input class="g-input" type="text" id="c-name" placeholder="Your name" required />
+                    </div>
+                    <div class="g-input-field">
+                      <input class="g-input" type="tel" id="c-phone" placeholder="Phone (10 digits)" required />
+                    </div>
+                  </div>
+
+                  <!-- Bin Selector Dropdown -->
+                  <div class="g-input-field mt-2-5">
+                    <select class="g-select" id="c-bin" required>
+                      <option value="">Select Nearest Ward 142 Bin...</option>
+                    </select>
+                  </div>
+
+                  <!-- Description Textarea -->
+                  <div class="g-input-field mt-2-5">
+                    <textarea class="g-textarea" id="c-location" rows="2" placeholder="Briefly describe the spot, landmark or civic issue..." required></textarea>
+                  </div>
+
+                  <!-- Category Pills Selection ('I\'m reporting for...') -->
+                  <div class="grievance-pills-section mt-3">
+                    <div class="pills-title">I'm reporting for...</div>
+                    <div class="grievance-category-pills" id="problem-pills-container">
+                      <button type="button" class="g-category-pill active" data-value="Overflow (>90% full)">Overflowing Bin</button>
+                      <button type="button" class="g-category-pill" data-value="Not collected for >24 hours">Missed Pickup (>24h)</button>
+                      <button type="button" class="g-category-pill" data-value="Foul Odor / Pest Breeding">Foul Odor &amp; Pests</button>
+                      <button type="button" class="g-category-pill" data-value="Hazardous / Biomedical waste mixed">Hazardous / Bio</button>
+                      <button type="button" class="g-category-pill" data-value="Animal Menace / Stray Dogs">Stray Animal Menace</button>
+                      <button type="button" class="g-category-pill" data-value="Illegal Commercial Dumping">Illegal Dumping</button>
+                      <button type="button" class="g-category-pill" data-value="Other">Other Civic Issue</button>
+                    </div>
+                    <!-- Hidden select for form backend compatibility -->
+                    <select id="c-problem" style="display: none;">
+                      <option value="Overflow (>90% full)" selected>Overflow (>90% full)</option>
+                      <option value="Not collected for >24 hours">Not collected for >24 hours</option>
+                      <option value="Foul Odor / Pest Breeding">Foul Odor / Pest Breeding</option>
+                      <option value="Hazardous / Biomedical waste mixed">Hazardous / Biomedical waste mixed</option>
+                      <option value="Animal Menace / Stray Dogs">Animal Menace / Stray Dogs</option>
+                      <option value="Illegal Commercial Dumping">Illegal Commercial Dumping</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  <!-- Photo Upload Dropzone with Live AI Diagnostic -->
+                  <div class="grievance-upload-section mt-3">
+                    <div class="photo-upload-compact-zone" id="photo-upload-zone">
+                      <input type="file" id="c-photo" accept="image/*" hidden />
+                      <div class="upload-compact-inner" id="upload-placeholder">
+                        <div class="compact-camera-icon">
+                          <span class="iconify" data-icon="solar:camera-add-bold"></span>
+                        </div>
+                        <div class="compact-camera-text">
+                          <span class="compact-upload-title">Attach photo evidence</span>
+                          <span class="compact-upload-sub">Vision AI computes fill % and auto-assigns urgency</span>
+                        </div>
+                      </div>
+                      <img id="photo-preview" class="compact-photo-preview" alt="Attached evidence" />
+                    </div>
+                  </div>
+
+                  <!-- Compact Vision AI Diagnostic Card -->
+                  <div class="grievance-ai-card mt-2-5">
+                    <div class="g-ai-card-header">
+                      <div class="flex items-center gap-1-5">
+                        <span class="iconify text-green" data-icon="solar:cpu-bolt-bold" data-width="15"></span>
+                        <span class="font-semibold text-xs text-main">Vision AI Diagnostic</span>
+                      </div>
+                      <span class="badge-pill-micro" id="ai-status-badge">Standby</span>
+                    </div>
+                    <div id="ai-panel-body" class="g-ai-panel-body">
+                      <div class="ai-standby-text">
+                        <span class="iconify" data-icon="solar:eye-scan-bold" data-width="15"></span>
+                        <span>Attach photo to trigger Qwen2.5-VL volumetric diagnosis &amp; priority grading</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Submit Pill Button (Dark high-contrast button matching reference) -->
+                  <button type="submit" class="g-btn-submit mt-4" id="btn-submit-complaint">
+                    <span>Send Grievance Report</span>
+                    <span class="g-btn-arrow">→</span>
+                  </button>
+                </form>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="complaint-success-modal" class="eco-modal-overlay">
+          <div class="modal-dialog-box">
+            <div class="modal-check-circle"><span class="iconify" data-icon="solar:check-circle-bold"></span></div>
+            <h3 class="modal-title">Grievance Registered Successfully</h3>
+            <div class="modal-id-badge" id="modal-app-id">KG-2025-XXXXXX</div>
+            <p class="modal-text">Your complaint has been validated and queued for BBMP Jayanagar Sub-Division inspection.</p>
+            <button class="btn-eco-submit full-width mt-6" id="modal-close-btn">
+              <span>Track Application Now</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           PAGE 5: STATUS TRACKER
+           ══════════════════════════════════════════════════════════════ -->
+      <section id="page-tracker" class="page">
+        <div class="page-container">
+          <div class="page-header-row">
+            <div>
+              <span class="header-tag">Live Milestone Tracking</span>
+              <h2 class="page-heading">Application Status Tracker</h2>
+              <p class="page-description">Follow real-time municipal workflow milestones from submission to compactor dispatch and bin clearance.</p>
+            </div>
+          </div>
+
+          <div class="tracker-split-layout mt-6">
+            <!-- Left Side: Search & Municipal Policy Card -->
+            <div class="tracker-left-col">
+              <div class="eco-card p-5">
+                <div class="search-bar-flex">
+                  <div class="search-input-wrap">
+                    <span class="iconify search-ico" data-icon="solar:magnifer-bold"></span>
+                    <input type="text" class="eco-search-input" id="tracker-search-input" placeholder="Enter Application ID (e.g. APP-001 or KG-2025-...)" />
+                  </div>
+                  <button class="btn-eco-action" id="btn-track">Check Status</button>
+                </div>
+                <div class="chips-row mt-4">
+                  <span class="chips-label">Recent Grievances:</span>
+                  <div class="chips-list" id="tracker-chips"></div>
+                </div>
+              </div>
+
+              <!-- Supplementary Ward SLA Telemetry Card -->
+              <div class="eco-card p-5 mt-4">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="iconify text-green" data-icon="solar:shield-check-bold" data-width="20"></span>
+                  <span class="font-bold text-sm text-main">Autonomous SLA Redressal Policy</span>
+                </div>
+                <p class="text-xs text-muted leading-relaxed">
+                  Every civic grievance registered across BBMP Ward 142 undergoes automated vision validation and milestone ledgering. Compactor trucks are dynamically routed to target bins within 4 hours.
+                </p>
+                <div class="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-light text-xs font-mono">
+                  <div>
+                    <span class="text-dim">Jurisdiction:</span>
+                    <span class="font-bold text-main block mt-0.5">BBMP Jayanagar 142</span>
+                  </div>
+                  <div>
+                    <span class="text-dim">Target SLA:</span>
+                    <span class="font-bold text-green block mt-0.5">&lt; 4 Hours Resolution</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side: Milestone Status Card -->
+            <div class="tracker-right-col">
+              <div id="tracker-result" class="tracker-results"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           PAGE 6: OFFICER DESK
+           ══════════════════════════════════════════════════════════════ -->
+      <section id="page-officer" class="page">
+        <div class="page-container">
+          <div class="page-header-row">
+            <div>
+              <span class="header-tag">BBMP Sub-Division Desk</span>
+              <h2 class="page-heading">Municipal Officer Review Console</h2>
+              <p class="page-description">Inspect AI diagnostics, approve work orders, assign compaction trucks, and manage ward backlog.</p>
+            </div>
+          </div>
+
+          <div class="officer-kpis-grid mt-6" id="officer-kpi"></div>
+
+          <div class="filter-tab-bar mt-6">
+            <button class="tab-btn active" data-filter="PENDING">Pending Review</button>
+            <button class="tab-btn" data-filter="APPROVED">Approved Orders</button>
+            <button class="tab-btn" data-filter="COMPLETED">Completed</button>
+            <button class="tab-btn" data-filter="REJECTED">Rejected</button>
+            <button class="tab-btn" data-filter="ALL">All Records</button>
+          </div>
+
+          <div id="officer-cards" class="officer-cards-grid mt-6"></div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           PAGE 7: LIVE FLEET MAP
+           ══════════════════════════════════════════════════════════════ -->
+      <section id="page-map" class="page">
+        <div class="page-container">
+          <div class="page-header-row">
+            <div>
+              <span class="header-tag">Live GIS Telemetry</span>
+              <h2 class="page-heading">Ward 142 Fleet &amp; Waste Grid</h2>
+              <p class="page-description">GPS compactor truck positions, monitored bins, and dispatch route lines across Jayanagar.</p>
+            </div>
+          </div>
+
+          <div class="eco-card map-frame-card mt-6">
+            <div class="map-layout-grid">
+              <div id="leaflet-map" class="map-surface"></div>
+              
+              <div class="map-side-panel">
+                <div class="side-panel-header">
+                  <span class="font-bold text-sm">Compactor Fleet</span>
+                  <span class="badge-pill">3 Trucks</span>
+                </div>
+                <div id="fleet-cards" class="fleet-cards-scroll"></div>
+                
+                <div class="map-legend">
+                  <div class="legend-header-text">Fill Severity</div>
+                  <div class="legend-grid">
+                    <span class="leg-item"><span class="dot dot-red"></span> &gt;80% Critical</span>
+                    <span class="leg-item"><span class="dot dot-amber"></span> 50-80% Moderate</span>
+                    <span class="leg-item"><span class="dot dot-green"></span> &lt;50% Normal</span>
+                    <span class="leg-item"><span class="dot dot-blue"></span> Compactor 🚛</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           PAGE 8: FUEL & ROUTE ECONOMICS
+           ══════════════════════════════════════════════════════════════ -->
+      <section id="page-fuel" class="page">
+        <div class="page-container">
+          <div class="page-header-row">
+            <div>
+              <span class="header-tag">Municipal Route Intelligence</span>
+              <h2 class="page-heading">Generative Route Tree &amp; Fuel Economics</h2>
+              <p class="page-description">Algorithmic tree branching graph of Ward 142 compactor dispatch paths. Interactive parameter sliders, route tree physics, and diesel burn savings audits.</p>
+            </div>
+          </div>
+
+          <!-- Tree Layout Route Optimization Station (Exact Image 2 Specification) -->
+          <div class="tree-station-frame mt-6">
+            
+            <!-- Top Status Bar -->
+            <div class="tree-station-topbar">
+              <div class="tree-top-coords">
+                <div class="tree-coord-item">
+                  <span class="coord-val">700</span>
+                  <span class="coord-bar"></span>
+                  <span class="coord-label">ROOT X</span>
+                </div>
+                <div class="tree-coord-item">
+                  <span class="coord-val">1000</span>
+                  <span class="coord-label">ROOT Y</span>
+                </div>
+              </div>
+              <div class="tree-top-mode">
+                MODE: TREE LAYOUT &bull; WARD 142 DIESEL ROUTE GRAPH
+              </div>
+            </div>
+
+            <!-- Workspace: Controls Sidebar + Canvas + HUD Card -->
+            <div class="tree-workspace">
+              
+              <!-- Left Parameter Sliders & Telemetry Sidebar -->
+              <div class="tree-sidebar">
+                <div class="tree-slider-list">
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-scale-val">1.00</span>
+                    <input type="range" class="param-slider" id="p-scale" min="0.6" max="1.5" step="0.05" value="1.00" />
+                    <span class="param-name">SCALE</span>
+                  </div>
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-scalered-val">1.05</span>
+                    <input type="range" class="param-slider" id="p-scalered" min="0.8" max="1.3" step="0.05" value="1.05" />
+                    <span class="param-name">SCALE REDUCTION</span>
+                  </div>
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-width-val">1.42</span>
+                    <input type="range" class="param-slider" id="p-width" min="0.5" max="3.0" step="0.1" value="1.42" />
+                    <span class="param-name">WIDTH</span>
+                  </div>
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-widthred-val">0.66</span>
+                    <input type="range" class="param-slider" id="p-widthred" min="0.4" max="1.0" step="0.05" value="0.66" />
+                    <span class="param-name">WIDTH REDUCTION</span>
+                  </div>
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-leaflen-val">0.50</span>
+                    <input type="range" class="param-slider" id="p-leaflen" min="0.2" max="1.0" step="0.05" value="0.50" />
+                    <span class="param-name">LEAF LENGTH</span>
+                  </div>
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-rot-val">70.00</span>
+                    <input type="range" class="param-slider" id="p-rot" min="30" max="120" step="1" value="70" />
+                    <span class="param-name">LEAF ROTATION</span>
+                  </div>
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-subseg-val">2</span>
+                    <input type="range" class="param-slider" id="p-subseg" min="1" max="4" step="1" value="2" />
+                    <span class="param-name">NUMBER SUB SEGMENTS</span>
+                  </div>
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-varlen-val">50.00</span>
+                    <input type="range" class="param-slider" id="p-varlen" min="10" max="90" step="5" value="50" />
+                    <span class="param-name">VARIANCE LENGTH</span>
+                  </div>
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-varang-val">50.00</span>
+                    <input type="range" class="param-slider" id="p-varang" min="10" max="90" step="5" value="50" />
+                    <span class="param-name">VARIANCE ANGLE</span>
+                  </div>
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-spawn-val">0.00</span>
+                    <input type="range" class="param-slider" id="p-spawn" min="0.0" max="0.5" step="0.05" value="0.00" />
+                    <span class="param-name">CHANCE OF SPAWNING</span>
+                  </div>
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-rootlen-val">0.66</span>
+                    <input type="range" class="param-slider" id="p-rootlen" min="0.3" max="1.2" step="0.05" value="0.66" />
+                    <span class="param-name">ROOT LENGTH</span>
+                  </div>
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-rootw-val">2.00</span>
+                    <input type="range" class="param-slider" id="p-rootw" min="1.0" max="4.0" step="0.2" value="2.00" />
+                    <span class="param-name">ROOT WIDTH</span>
+                  </div>
+                  <div class="tree-param-row">
+                    <span class="param-num" id="p-rootwred-val">1.21</span>
+                    <input type="range" class="param-slider" id="p-rootwred" min="0.5" max="2.0" step="0.05" value="1.21" />
+                    <span class="param-name">ROOT WIDTH REDUCTION</span>
+                  </div>
+                </div>
+
+                <!-- Barcode & Date Timeline -->
+                <div class="tree-barcode-box">
+                  <div class="barcode-sub-meta">
+                    <span class="meta-small">247</span>
+                    <span class="meta-date">2025/09/30</span>
+                  </div>
+                  <div class="barcode-strip"></div>
+                  <div class="barcode-sub-meta bottom">
+                    <span>244 2025/09/13</span>
+                    <span>2506 2025/10/10</span>
+                  </div>
+                </div>
+
+                <!-- Lower Status Telemetry -->
+                <div class="tree-status-block">
+                  <div class="status-row"><span class="k">(E)DIT MODE</span><span class="v">: LEAF / ROUTE</span></div>
+                  <div class="status-row"><span class="k">NUM OF LEAFS</span><span class="v">: 71 NODES</span></div>
+                  <div class="status-row"><span class="k">MAX LEVEL BRANCH</span><span class="v">: 13</span></div>
+                  <div class="status-row"><span class="k">(W)IREFRAME MODE</span><span class="v">: FALSE</span></div>
+                  <div class="status-row"><span class="k">(F)RAME BORDER</span><span class="v">: FALSE</span></div>
+                  <div class="status-row"><span class="k">REMOVE BRANCH</span><span class="v">: BACKSPACE</span></div>
+                  <div class="status-row"><span class="k">RECORD (P)DF</span><span class="v">: TRUE</span></div>
+                  <div class="status-filepath">\LOGISTICS\WARD142_TREE_OPTIMIZED_ROUTE.PDF</div>
+                </div>
+              </div>
+
+              <!-- Center Interactive Canvas with Floating HUD Card -->
+              <div class="tree-canvas-wrapper">
+                <canvas id="fuel-tree-canvas" width="1100" height="760"></canvas>
+
+                <!-- Floating Route Inspection Card (Image 2 Replica) -->
+                <div class="tree-hud-card" id="tree-hud-overlay">
+                  <div class="hud-dials">
+                    <div class="hud-dial-line">
+                      <span class="d-num">45.00</span>
+                      <span class="d-bar-fill"></span>
+                      <span class="d-label">LEAF ROTATION</span>
+                    </div>
+                    <div class="hud-dial-line">
+                      <span class="d-num">0.33</span>
+                      <span class="d-bar-fill w-35"></span>
+                      <span class="d-label">LEAF SCALE</span>
+                    </div>
+                    <div class="hud-dial-line">
+                      <span class="d-num">20.00</span>
+                      <span class="d-bar-fill w-65"></span>
+                      <span class="d-label">ROOT LENGTH</span>
+                    </div>
+                  </div>
+
+                  <div class="hud-specs">
+                    <div class="spec-line"><span class="sk">TYPE</span><span class="sv">: 0 (EURO-VI DIESEL)</span></div>
+                    <div class="spec-line"><span class="sk">COUNT</span><span class="sv">: 12 BINS</span></div>
+                    <div class="spec-line"><span class="sk">INDEX</span><span class="sv">: 349</span></div>
+                    <div class="spec-line"><span class="sk">TRUCK-ID</span><span class="sv">: KA-01-EA-1042</span></div>
+                    <div class="spec-line"><span class="sk">DATE</span><span class="sv">: 2025-10-10</span></div>
+                    <div class="spec-line"><span class="sk">SAVINGS</span><span class="sv">: ₹3,420 / DAY</span></div>
+                    <div class="spec-line"><span class="sk">DIESEL</span><span class="sv">: 38.4 L SAVED</span></div>
+                    <div class="spec-line"><span class="sk">ROUTE</span><span class="sv">: 17.7 KM (CUT 14.8 KM)</span></div>
+                    <div class="spec-comment">
+                      BBMP JAYANAGAR 4TH BLOCK TO DEPOT HQ: DYNAMIC COMPACTION CUT 38.2% DIESEL BURN.
+                    </div>
+                  </div>
+
+                  <!-- QR Code Box -->
+                  <div class="hud-qr-container">
+                    <div class="qr-svg-holder">
+                      <svg viewBox="0 0 45 45" width="46" height="46">
+                        <rect width="45" height="45" fill="#ffffff" />
+                        <rect x="2" y="2" width="13" height="13" fill="#000000" />
+                        <rect x="4" y="4" width="9" height="9" fill="#ffffff" />
+                        <rect x="6" y="6" width="5" height="5" fill="#000000" />
+                        <rect x="30" y="2" width="13" height="13" fill="#000000" />
+                        <rect x="32" y="4" width="9" height="9" fill="#ffffff" />
+                        <rect x="34" y="6" width="5" height="5" fill="#000000" />
+                        <rect x="2" y="30" width="13" height="13" fill="#000000" />
+                        <rect x="4" y="32" width="9" height="9" fill="#ffffff" />
+                        <rect x="6" y="34" width="5" height="5" fill="#000000" />
+                        <rect x="18" y="4" width="3" height="3" fill="#000000" />
+                        <rect x="24" y="6" width="3" height="3" fill="#000000" />
+                        <rect x="18" y="12" width="3" height="3" fill="#000000" />
+                        <rect x="24" y="16" width="3" height="3" fill="#000000" />
+                        <rect x="8" y="18" width="3" height="3" fill="#000000" />
+                        <rect x="16" y="22" width="4" height="3" fill="#000000" />
+                        <rect x="24" y="24" width="3" height="4" fill="#000000" />
+                        <rect x="32" y="20" width="4" height="3" fill="#000000" />
+                        <rect x="38" y="26" width="3" height="4" fill="#000000" />
+                        <rect x="18" y="32" width="4" height="3" fill="#000000" />
+                        <rect x="26" y="36" width="3" height="4" fill="#000000" />
+                        <rect x="34" y="34" width="4" height="3" fill="#000000" />
+                      </svg>
+                    </div>
+                    <div class="qr-info-meta">
+                      <div>QRCODE ID : 29</div>
+                      <div>CODE SIZE : LARGE</div>
+                      <div>SHORT URL : GOO.GL/MS4A</div>
+                      <div>SAVE QR   : (S)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 4 Fuel Metrics -->
+          <div class="eco-stats-grid mt-6">
+            <div class="eco-stat-card border-accent-green">
+              <div class="stat-top"><span class="stat-badge green">Budget Saved</span></div>
+              <div class="stat-number text-green" id="fuel-total-savings">₹0</div>
+              <div class="stat-title">Route Savings</div>
+            </div>
+            <div class="eco-stat-card border-accent-amber">
+              <div class="stat-top"><span class="stat-badge amber">Diesel Burn</span></div>
+              <div class="stat-number text-amber" id="fuel-total-liters">0 L</div>
+              <div class="stat-title">Fuel Consumed</div>
+            </div>
+            <div class="eco-stat-card border-accent-neutral">
+              <div class="stat-top"><span class="stat-badge neutral">Coverage</span></div>
+              <div class="stat-number text-neutral" id="fuel-total-dist">0 km</div>
+              <div class="stat-title">Distance Covered</div>
+            </div>
+            <div class="eco-stat-card border-accent-emerald">
+              <div class="stat-top"><span class="stat-badge emerald">Efficiency</span></div>
+              <div class="stat-number text-emerald" id="fuel-avg-cost">₹0/km</div>
+              <div class="stat-title">Average Cost / km</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ── Toast Notifications (Sonner Engine) ── -->
+    <div id="toaster" class="eco-toaster" aria-live="polite"></div>
+
+  </div> <!-- /canvas-frame -->
+
+  <!-- Leaflet & App Script -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>

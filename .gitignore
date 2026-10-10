@@ -1,0 +1,98 @@
+# ──────────────────────────────────────────────────────────────
+# SECURITY & SECRETS: Never commit credentials or env files
+# ──────────────────────────────────────────────────────────────
+.env
+.env.*
+*.env
+!.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# ──────────────────────────────────────────────────────────────
+# Python & Virtual Environments
+# ──────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ──────────────────────────────────────────────────────────────
+# Node, Frontend & Builds
+# ──────────────────────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+dist-ssr/
+*.local
+
+# ──────────────────────────────────────────────────────────────
+# SQLite Databases & Dynamic Uploads
+# ──────────────────────────────────────────────────────────────
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+*.db
+*.sqlite
+*.sqlite3
+!data/.gitkeep
+
+# Citizen image uploads (preserve sample test images and gitkeep)
+uploads/upload_*
+!uploads/.gitkeep
+!uploads/sample_*
+
+# ──────────────────────────────────────────────────────────────
+# IDE, Editors & OS Files
+# ──────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# ──────────────────────────────────────────────────────────────
+# Logs & IDE Customizations
+# ──────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.agents/
+skills-lock.json
+.superpowers/
